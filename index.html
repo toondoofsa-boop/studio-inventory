@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Studio Inv">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Studio Inventory</title>
+  <style>
+    :root{--bg:#0a0a0a;--surf:#111111;--brd:#1a1a1a;--acc:#f5c842;--txt:#e8e8e8;--muted:#666;--danger:#ef4444;--nav:64px}
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrains Mono','Courier New',monospace;font-size:14px;line-height:1.5;overflow:hidden}
+    #app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
+    #view{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);-webkit-overflow-scrolling:touch}
+
+    /* Typography */
+    .lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:16px 16px 8px}
+
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}
+    .stat{background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:14px 8px;text-align:center}
+    .stat-n{font-size:28px;font-weight:700;color:var(--acc);line-height:1;margin-bottom:4px}
+    .stat-l{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+    /* Cards */
+    .card{background:var(--surf);border:1px solid var(--brd);border-radius:8px;margin:0 16px 8px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:opacity .15s}
+    .card:active{opacity:.75}
+    .card.cb{border-left-width:3px}
+    .ct{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px}
+    .cs{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px}
+    .badge{font-size:10px;font-weight:600;background:var(--brd);color:var(--muted);padding:2px 7px;border-radius:100px}
+    .badge.ok{background:rgba(245,200,66,.15);color:var(--acc)}
+    .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+
+    /* Progress */
+    .prog-wrap{margin-top:10px}
+    .prog{height:3px;background:var(--brd);border-radius:2px;overflow:hidden}
+    .prog-fill{height:100%;border-radius:2px;transition:width .3s}
+    .prog-txt{font-size:10px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between}
+
+    /* Page header */
+    .ph{padding:20px 16px 8px}
+    .ph-title{font-size:22px;font-weight:700;color:var(--txt)}
+    .ph-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+    /* Detail header */
+    .dh{padding:16px 16px 12px;border-bottom:1px solid var(--brd);display:flex;align-items:flex-start;gap:12px}
+    .back{width:32px;height:32px;border-radius:8px;border:1px solid var(--brd);background:var(--surf);color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;line-height:1}
+    .dh-body{flex:1;min-width:0}
+    .dh-title{font-size:18px;font-weight:700;color:var(--txt);word-break:break-word}
+    .dh-sub{font-size:11px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px}
+    .dh-acts{display:flex;gap:4px;flex-shrink:0}
+
+    /* Item rows */
+    .items-sec{border-top:1px solid var(--brd)}
+    .irow{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--brd)}
+    .irow:last-child{border-bottom:none}
+    .ichk{width:20px;height:20px;border-radius:4px;border:2px solid var(--brd);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .ichk svg{width:12px;height:12px;stroke:#0a0a0a;stroke-width:2.5;fill:none;display:none}
+    .ichk.on svg{display:block}
+    .ibody{flex:1;min-width:0}
+    .iname{font-size:13px;font-weight:500;color:var(--txt);word-break:break-word}
+    .iname.strike{text-decoration:line-through;color:var(--muted)}
+    .inotes{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-word}
+    .iacts{display:flex;gap:4px;flex-shrink:0}
+    .ibtn{width:30px;height:30px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s}
+    .ibtn:active{background:var(--brd)}
+
+    /* Empty state */
+    .empty{text-align:center;padding:56px 32px;color:var(--muted)}
+    .empty .ico{font-size:40px;margin-bottom:16px}
+    .empty h3{font-size:12px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+    .empty p{font-size:11px;line-height:1.7}
+
+    /* Bottom nav */
+    #bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:calc(var(--nav) + env(safe-area-inset-bottom));background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+    .nb{flex:1;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:inherit;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .15s}
+    .nb.on{color:var(--acc)}
+    .nb svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none}
+
+    /* FAB */
+    #fab{position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 16px);right:max(16px,calc(50vw - 224px));width:56px;height:56px;border-radius:50%;background:var(--acc);border:none;color:#0a0a0a;font-size:28px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 20px rgba(245,200,66,.35);transition:transform .15s,box-shadow .15s,opacity .2s}
+    #fab:active{transform:scale(.92);box-shadow:0 2px 10px rgba(245,200,66,.2)}
+    #fab.hide{opacity:0;pointer-events:none}
+
+    /* Modal */
+    #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center}
+    #moverlay.on{display:flex}
+    #mbox{background:var(--surf);border:1px solid var(--brd);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:up .2s ease-out}
+    @keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .mhandle{width:40px;height:4px;background:var(--brd);border-radius:2px;margin:12px auto 0}
+    .mtitle{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--acc);padding:16px 20px 4px}
+    .mbody{padding:12px 20px 4px}
+
+    /* Form */
+    .fg{margin-bottom:16px}
+    .fl{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .fi{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s}
+    .fi:focus{border-color:var(--acc)}
+    .fi::placeholder{color:var(--muted)}
+    textarea.fi{resize:none;min-height:68px}
+    select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+
+    /* Color picker */
+    .cgrid{display:flex;flex-wrap:wrap;gap:10px}
+    .copt{width:32px;height:32px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .1s,border-color .1s}
+    .copt:active{transform:scale(.9)}
+    .copt.sel{border-color:#fff;transform:scale(1.12)}
+
+    /* Buttons */
+    .btn{display:block;width:100%;padding:12px;border-radius:8px;border:none;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;margin-top:4px}
+    .btn:active{opacity:.8}
+    .btn-p{background:var(--acc);color:#0a0a0a}
+    .btn-d{background:var(--danger);color:#fff}
+    .btn-g{background:transparent;border:1px solid var(--brd);color:var(--muted)}
+
+    /* Confirm */
+    #conf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;align-items:center;justify-content:center;padding:24px}
+    #conf.on{display:flex}
+    #cbox{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:24px;width:100%;max-width:300px}
+    .ctitle{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt);margin-bottom:8px}
+    .cmsg{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+    .cbtns{display:flex;gap:8px}
+    .cbtns .btn{margin:0;flex:1}
+
+    /* Toast */
+    #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--surf);border:1px solid var(--brd);color:var(--txt);font-family:inherit;font-size:12px;font-weight:500;padding:10px 20px;border-radius:100px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+    #toast.on{opacity:1}
+
+    /* Search */
+    .swrap{padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--brd)}
+    .sinwrap{position:relative}
+    .sinwrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted);stroke-width:2;fill:none}
+    .sin{width:100%;background:var(--surf);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px 12px 10px 36px;outline:none;transition:border-color .15s}
+    .sin:focus{border-color:var(--acc)}
+    .sin::placeholder{color:var(--muted)}
+  </style>
+</head>
+<body>
+<div id="app">
+  <div id="view"></div>
+  <nav id="bnav">
+    <button class="nb" data-tab="home" onclick="nav('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="nb" data-tab="boxes" onclick="nav('boxes')">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      Boxes
+    </button>
+    <button class="nb" data-tab="setups" onclick="nav('setups')">
+      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Setups
+    </button>
+    <button class="nb" data-tab="search" onclick="nav('search')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </button>
+  </nav>
+  <button id="fab" onclick="handleFab()">+</button>
+</div>
+
+<div id="moverlay" onclick="overlayClick(event)">
+  <div id="mbox">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="mtitle"></div>
+    <div class="mbody" id="mbody"></div>
+  </div>
+</div>
+
+<div id="conf">
+  <div id="cbox">
+    <div class="ctitle" id="ctitle"></div>
+    <div class="cmsg" id="cmsg"></div>
+    <div class="cbtns">
+      <button class="btn btn-g" onclick="hideConf()">Cancel</button>
+      <button class="btn btn-d" id="cok">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── Constants ──────────────────────────────────────────────
+const COLORS=['#f5c842','#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#06b6d4','#ec4899','#84cc16','#64748b'];
+
+// ── State ──────────────────────────────────────────────────
+let S={view:'home',boxId:null,setupId:null,q:'',boxes:[],setups:[]};
+
+// ── Persistence ────────────────────────────────────────────
+function load(){try{S.boxes=JSON.parse(localStorage.getItem('studio-boxes')||'[]')}catch(e){S.boxes=[]}try{S.setups=JSON.parse(localStorage.getItem('studio-setups')||'[]')}catch(e){S.setups=[]}}
+function save(){localStorage.setItem('studio-boxes',JSON.stringify(S.boxes));localStorage.setItem('studio-setups',JSON.stringify(S.setups))}
+
+// ── Utilities ──────────────────────────────────────────────
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function gbox(id){return S.boxes.find(b=>b.id===id)}
+function gsetup(id){return S.setups.find(s=>s.id===id)}
+
+// ── Navigation ─────────────────────────────────────────────
+function nav(view,id){
+  S.view=view;
+  if(view==='box-detail')S.boxId=id;
+  if(view==='setup-detail')S.setupId=id;
+  render();
+  document.getElementById('view').scrollTop=0;
+}
+
+// ── Box CRUD ───────────────────────────────────────────────
+function cBox(name,color,loc){S.boxes.unshift({id:uid(),name,color:color||COLORS[0],location:loc||'',items:[],createdAt:Date.now()});save()}
+function uBox(id,name,color,loc){const b=gbox(id);if(!b)return;b.name=name;b.color=color;b.location=loc||'';save()}
+function dBox(id){S.boxes=S.boxes.filter(b=>b.id!==id);save()}
+
+// ── Item CRUD ──────────────────────────────────────────────
+function cItem(boxId,name,notes){const b=gbox(boxId);if(!b)return;b.items.push({id:uid(),name,notes:notes||'',checked:false});save()}
+function uItem(boxId,itemId,name,notes){const b=gbox(boxId);if(!b)return;const i=b.items.find(i=>i.id===itemId);if(!i)return;i.name=name;i.notes=notes||'';save()}
+function dItem(boxId,itemId){const b=gbox(boxId);if(!b)return;b.items=b.items.filter(i=>i.id!==itemId);save()}
+function tItem(boxId,itemId){const b=gbox(boxId);if(!b)return;const i=b.items.find(i=>i.id===itemId);if(!i)return;i.checked=!i.checked;save();render()}
+function mvItem(fromId,itemId,toId){const fb=gbox(fromId);const tb=gbox(toId);if(!fb||!tb)return;const idx=fb.items.findIndex(i=>i.id===itemId);if(idx<0)return;const[item]=fb.items.splice(idx,1);item.checked=false;tb.items.push(item);save()}
+
+// ── Setup CRUD ─────────────────────────────────────────────
+function cSetup(name,desc){S.setups.unshift({id:uid(),name,description:desc||'',items:[],createdAt:Date.now()});save()}
+function uSetup(id,name,desc){const s=gsetup(id);if(!s)return;s.name=name;s.description=desc||'';save()}
+function dSetup(id){S.setups=S.setups.filter(s=>s.id!==id);save()}
+
+// ── Setup Item CRUD ────────────────────────────────────────
+function cSI(sid,name,from){const s=gsetup(sid);if(!s)return;s.items.push({id:uid(),name,fromBox:from||'',checked:false});save()}
+function uSI(sid,iid,name,from){const s=gsetup(sid);if(!s)return;const i=s.items.find(i=>i.id===iid);if(!i)return;i.name=name;i.fromBox=from||'';save()}
+function dSI(sid,iid){const s=gsetup(sid);if(!s)return;s.items=s.items.filter(i=>i.id!==iid);save()}
+function tSI(sid,iid){const s=gsetup(sid);if(!s)return;const i=s.items.find(i=>i.id===iid);if(!i)return;i.checked=!i.checked;save();render()}
+
+// ── Toast ──────────────────────────────────────────────────
+let _tt;
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('on'),2200)}
+
+// ── Confirm ────────────────────────────────────────────────
+function showConf(title,msg,cb){document.getElementById('ctitle').textContent=title;document.getElementById('cmsg').textContent=msg;document.getElementById('cok').onclick=()=>{hideConf();cb()};document.getElementById('conf').classList.add('on')}
+function hideConf(){document.getElementById('conf').classList.remove('on')}
+
+// ── Modal ──────────────────────────────────────────────────
+function showModal(title,html){document.getElementById('mtitle').textContent=title;document.getElementById('mbody').innerHTML=html;document.getElementById('moverlay').classList.add('on')}
+function hideModal(){document.getElementById('moverlay').classList.remove('on')}
+function overlayClick(e){if(e.target===document.getElementById('moverlay'))hideModal()}
+
+// ── Color picker state ─────────────────────────────────────
+let _col=COLORS[0];
+function selCol(c){_col=c;document.querySelectorAll('.copt').forEach(el=>el.classList.toggle('sel',el.dataset.c===c))}
+function cgrid(sel){return`<div class="cgrid">${COLORS.map(c=>`<div class="copt${c===sel?' sel':''}" data-c="${c}" style="background:${c}" onclick="selCol('${c}')"></div>`).join('')}</div>`}
+
+// ── FAB ────────────────────────────────────────────────────
+function handleFab(){
+  if(S.view==='boxes')showCBox();
+  else if(S.view==='box-detail')showCItem(S.boxId);
+  else if(S.view==='setups')showCSetup();
+  else if(S.view==='setup-detail')showCSI(S.setupId);
+}
+
+// ── Box modals ─────────────────────────────────────────────
+function showCBox(){
+  _col=COLORS[0];
+  showModal('NEW BOX',`
+    <div class="fg"><label class="fl">Box Name</label><input class="fi" id="f-bn" placeholder="e.g. Drum Mics" maxlength="60"></div>
+    <div class="fg"><label class="fl">Location</label><input class="fi" id="f-bl" placeholder="e.g. Shelf A" maxlength="60"></div>
+    <div class="fg"><label class="fl">Color Tag</label>${cgrid(_col)}</div>
+    <button class="btn btn-p" onclick="subCBox()">Create Box</button>`);
+  setTimeout(()=>document.getElementById('f-bn')?.focus(),80);
+}
+function subCBox(){const n=document.getElementById('f-bn')?.value.trim();if(!n){toast('Box name required');return}cBox(n,_col,document.getElementById('f-bl')?.value.trim());hideModal();toast('Box created');nav('boxes')}
+
+function showEBox(id){
+  const b=gbox(id);if(!b)return;_col=b.color;
+  showModal('EDIT BOX',`
+    <div class="fg"><label class="fl">Box Name</label><input class="fi" id="f-bn" value="${esc(b.name)}" maxlength="60"></div>
+    <div class="fg"><label class="fl">Location</label><input class="fi" id="f-bl" value="${esc(b.location)}" placeholder="e.g. Shelf A" maxlength="60"></div>
+    <div class="fg"><label class="fl">Color Tag</label>${cgrid(_col)}</div>
+    <button class="btn btn-p" onclick="subEBox('${id}')">Save Changes</button>`);
+}
+function subEBox(id){const n=document.getElementById('f-bn')?.value.trim();if(!n){toast('Name required');return}uBox(id,n,_col,document.getElementById('f-bl')?.value.trim());hideModal();toast('Box updated');render()}
+
+// ── Item modals ────────────────────────────────────────────
+function showCItem(boxId){
+  showModal('ADD ITEM',`
+    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-in" placeholder="e.g. SM57" maxlength="80"></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-io" placeholder="e.g. Silver body, works great"></textarea></div>
+    <button class="btn btn-p" onclick="subCItem('${boxId}')">Add Item</button>`);
+  setTimeout(()=>document.getElementById('f-in')?.focus(),80);
+}
+function subCItem(boxId){const n=document.getElementById('f-in')?.value.trim();if(!n){toast('Name required');return}cItem(boxId,n,document.getElementById('f-io')?.value.trim());hideModal();toast('Item added');render()}
+
+function showEItem(boxId,itemId){
+  const b=gbox(boxId);const i=b?.items.find(x=>x.id===itemId);if(!i)return;
+  showModal('EDIT ITEM',`
+    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-in" value="${esc(i.name)}" maxlength="80"></div>
+    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-io">${esc(i.notes)}</textarea></div>
+    <button class="btn btn-p" onclick="subEItem('${boxId}','${itemId}')">Save Changes</button>`);
+}
+function subEItem(boxId,itemId){const n=document.getElementById('f-in')?.value.trim();if(!n){toast('Name required');return}uItem(boxId,itemId,n,document.getElementById('f-io')?.value.trim());hideModal();toast('Item updated');render()}
+
+function showMvItem(boxId,itemId){
+  const others=S.boxes.filter(b=>b.id!==boxId);
+  if(!others.length){toast('No other boxes');return}
+  showModal('MOVE ITEM',`
+    <div class="fg"><label class="fl">Move to Box</label><select class="fi" id="f-mt">${others.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></div>
+    <button class="btn btn-p" onclick="subMvItem('${boxId}','${itemId}')">Move Item</button>`);
+}
+function subMvItem(fromId,itemId){const toId=document.getElementById('f-mt')?.value;const tb=gbox(toId);mvItem(fromId,itemId,toId);hideModal();toast(`Moved to "${tb?.name}"`);render()}
+
+// ── Setup modals ───────────────────────────────────────────
+function showCSetup(){
+  showModal('NEW SETUP',`
+    <div class="fg"><label class="fl">Setup Name</label><input class="fi" id="f-sn" placeholder="e.g. Live Drum Recording" maxlength="80"></div>
+    <div class="fg"><label class="fl">Description (optional)</label><textarea class="fi" id="f-sd" placeholder="e.g. Full kit, 8 mics"></textarea></div>
+    <button class="btn btn-p" onclick="subCSetup()">Create Setup</button>`);
+  setTimeout(()=>document.getElementById('f-sn')?.focus(),80);
+}
+function subCSetup(){const n=document.getElementById('f-sn')?.value.trim();if(!n){toast('Name required');return}cSetup(n,document.getElementById('f-sd')?.value.trim());hideModal();toast('Setup created');nav('setups')}
+
+function showESetup(id){
+  const s=gsetup(id);if(!s)return;
+  showModal('EDIT SETUP',`
+    <div class="fg"><label class="fl">Setup Name</label><input class="fi" id="f-sn" value="${esc(s.name)}" maxlength="80"></div>
+    <div class="fg"><label class="fl">Description (optional)</label><textarea class="fi" id="f-sd">${esc(s.description)}</textarea></div>
+    <button class="btn btn-p" onclick="subESetup('${id}')">Save Changes</button>`);
+}
+function subESetup(id){const n=document.getElementById('f-sn')?.value.trim();if(!n){toast('Name required');return}uSetup(id,n,document.getElementById('f-sd')?.value.trim());hideModal();toast('Setup updated');render()}
+
+// ── Setup Item modals ──────────────────────────────────────
+function showCSI(sid){
+  showModal('ADD GEAR',`
+    <div class="fg"><label class="fl">Gear Name</label><input class="fi" id="f-gin" placeholder="e.g. SM57" maxlength="80"></div>
+    <div class="fg"><label class="fl">From Box / Location</label><input class="fi" id="f-gfb" placeholder="e.g. Mic Box — Shelf A" maxlength="80"></div>
+    <button class="btn btn-p" onclick="subCSI('${sid}')">Add Gear</button>`);
+  setTimeout(()=>document.getElementById('f-gin')?.focus(),80);
+}
+function subCSI(sid){const n=document.getElementById('f-gin')?.value.trim();if(!n){toast('Name required');return}cSI(sid,n,document.getElementById('f-gfb')?.value.trim());hideModal();toast('Gear added');render()}
+
+function showESI(sid,iid){
+  const s=gsetup(sid);const i=s?.items.find(x=>x.id===iid);if(!i)return;
+  showModal('EDIT GEAR',`
+    <div class="fg"><label class="fl">Gear Name</label><input class="fi" id="f-gin" value="${esc(i.name)}" maxlength="80"></div>
+    <div class="fg"><label class="fl">From Box / Location</label><input class="fi" id="f-gfb" value="${esc(i.fromBox)}" maxlength="80"></div>
+    <button class="btn btn-p" onclick="subESI('${sid}','${iid}')">Save Changes</button>`);
+}
+function subESI(sid,iid){const n=document.getElementById('f-gin')?.value.trim();if(!n){toast('Name required');return}uSI(sid,iid,n,document.getElementById('f-gfb')?.value.trim());hideModal();toast('Gear updated');render()}
+
+// ── Delete confirms ────────────────────────────────────────
+function confDelBox(id){const b=gbox(id);showConf('Delete Box',`Delete "${b?.name}" and all its items? Cannot be undone.`,()=>{dBox(id);toast('Box deleted');nav('boxes')})}
+function confDelItem(boxId,itemId){const b=gbox(boxId);const i=b?.items.find(x=>x.id===itemId);showConf('Delete Item',`Delete "${i?.name}"?`,()=>{dItem(boxId,itemId);toast('Item deleted');render()})}
+function confDelSetup(id){const s=gsetup(id);showConf('Delete Setup',`Delete "${s?.name}" and its checklist? Cannot be undone.`,()=>{dSetup(id);toast('Setup deleted');nav('setups')})}
+function confDelSI(sid,iid){const s=gsetup(sid);const i=s?.items.find(x=>x.id===iid);showConf('Delete Gear',`Delete "${i?.name}"?`,()=>{dSI(sid,iid);toast('Gear deleted');render()})}
+
+// ── Render ─────────────────────────────────────────────────
+function render(){
+  // Nav highlight
+  document.querySelectorAll('.nb').forEach(b=>{
+    const t=b.dataset.tab;
+    b.classList.toggle('on',t===S.view||(t==='boxes'&&S.view==='box-detail')||(t==='setups'&&S.view==='setup-detail'));
+  });
+  // FAB
+  const fab=document.getElementById('fab');
+  fab.classList.toggle('hide',!['boxes','box-detail','setups','setup-detail'].includes(S.view));
+  // View
+  const el=document.getElementById('view');
+  if(S.view==='home')el.innerHTML=vHome();
+  else if(S.view==='boxes')el.innerHTML=vBoxes();
+  else if(S.view==='box-detail')el.innerHTML=vBoxDetail();
+  else if(S.view==='setups')el.innerHTML=vSetups();
+  else if(S.view==='setup-detail')el.innerHTML=vSetupDetail();
+  else if(S.view==='search')el.innerHTML=vSearch();
+  // Search input wiring
+  if(S.view==='search'){
+    const si=document.getElementById('si');
+    if(si){si.value=S.q;si.addEventListener('input',e=>{S.q=e.target.value;document.getElementById('sr').innerHTML=vSearchResults()});setTimeout(()=>si.focus(),80)}
+  }
+}
+
+// ── Home ───────────────────────────────────────────────────
+function vHome(){
+  const tb=S.boxes.length,ti=S.boxes.reduce((a,b)=>a+b.items.length,0),ts=S.setups.length;
+  const rb=S.boxes.slice(0,3),rs=S.setups.slice(0,3);
+  const chk=svg=>svg;
+  let h=`<div class="ph"><div class="ph-title">Studio Inventory</div><div class="ph-sub">Your gear, organized.</div></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-n">${tb}</div><div class="stat-l">Boxes</div></div>
+    <div class="stat"><div class="stat-n">${ti}</div><div class="stat-l">Items</div></div>
+    <div class="stat"><div class="stat-n">${ts}</div><div class="stat-l">Setups</div></div>
+  </div>`;
+  if(!tb&&!ts){
+    h+=`<div class="empty"><div class="ico">📦</div><h3>Nothing here yet</h3><p>Tap <strong>Boxes</strong> to start organizing gear into labeled boxes, or <strong>Setups</strong> to build a session checklist.</p></div>`;
+  } else {
+    if(rb.length){
+      h+=`<div class="lbl">Recent Boxes</div>`;
+      h+=rb.map(b=>{const ck=b.items.filter(i=>i.checked).length,tot=b.items.length;return`<div class="card cb" style="border-left-color:${b.color}" onclick="nav('box-detail','${b.id}')"><div class="ct">${esc(b.name)}</div><div class="cs"><span class="dot" style="background:${b.color}"></span>${b.location?`<span>${esc(b.location)}</span>`:''}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot}</span></div></div>`}).join('');
+    }
+    if(rs.length){
+      h+=`<div class="lbl">Recent Setups</div>`;
+      h+=rs.map(s=>{const ck=s.items.filter(i=>i.checked).length,tot=s.items.length;return`<div class="card" onclick="nav('setup-detail','${s.id}')"><div class="ct">${esc(s.name)}</div><div class="cs">${s.description?`<span>${esc(s.description)}</span>`:''}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot} ready</span></div></div>`}).join('');
+    }
+  }
+  return h;
+}
+
+// ── Boxes list ─────────────────────────────────────────────
+function vBoxes(){
+  if(!S.boxes.length)return`<div class="ph"><div class="ph-title">Boxes</div><div class="ph-sub">Organize gear into labeled boxes</div></div><div class="empty"><div class="ico">📦</div><h3>No boxes yet</h3><p>Tap + to create your first box and start adding gear.</p></div>`;
+  let h=`<div class="ph"><div class="ph-title">Boxes</div><div class="ph-sub">${S.boxes.length} box${S.boxes.length===1?'':'es'}</div></div>`;
+  h+=S.boxes.map(b=>{const ck=b.items.filter(i=>i.checked).length,tot=b.items.length;return`<div class="card cb" style="border-left-color:${b.color}" onclick="nav('box-detail','${b.id}')"><div class="ct">${esc(b.name)}</div><div class="cs"><span class="dot" style="background:${b.color}"></span>${b.location?`<span>${esc(b.location)}</span>`:`<span style="color:var(--muted)">No location</span>`}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot}</span></div></div>`}).join('');
+  return h;
+}
+
+// ── Box detail ─────────────────────────────────────────────
+function vBoxDetail(){
+  const b=gbox(S.boxId);if(!b){nav('boxes');return''}
+  const ck=b.items.filter(i=>i.checked).length,tot=b.items.length,pct=tot>0?Math.round(ck/tot*100):0;
+  let h=`<div class="dh">
+    <button class="back" onclick="nav('boxes')">←</button>
+    <div class="dh-body">
+      <div class="dh-title">${esc(b.name)}</div>
+      <div class="dh-sub"><span class="dot" style="background:${b.color}"></span>${b.location?esc(b.location):'No location'}</div>
+      ${tot>0?`<div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:${b.color}"></div></div><div class="prog-txt"><span>${ck} checked</span><span>${pct}%</span></div></div>`:''}
+    </div>
+    <div class="dh-acts">
+      <button class="ibtn" onclick="showEBox('${b.id}')">✏️</button>
+      <button class="ibtn" onclick="confDelBox('${b.id}')">🗑️</button>
+    </div>
+  </div><div class="items-sec">`;
+  if(!b.items.length){
+    h+=`<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Tap + to add gear to this box.</p></div>`;
+  } else {
+    h+=b.items.map(i=>`<div class="irow">
+      <div class="ichk${i.checked?' on':''}" style="${i.checked?`background:${b.color};border-color:${b.color}`:''}" onclick="tItem('${b.id}','${i.id}')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="ibody"><div class="iname${i.checked?' strike':''}">${esc(i.name)}</div>${i.notes?`<div class="inotes">${esc(i.notes)}</div>`:''}</div>
+      <div class="iacts">
+        <button class="ibtn" title="Move" onclick="showMvItem('${b.id}','${i.id}')">↗️</button>
+        <button class="ibtn" title="Edit" onclick="showEItem('${b.id}','${i.id}')">✏️</button>
+        <button class="ibtn" title="Delete" onclick="confDelItem('${b.id}','${i.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+  }
+  return h+'</div>';
+}
+
+// ── Setups list ────────────────────────────────────────────
+function vSetups(){
+  if(!S.setups.length)return`<div class="ph"><div class="ph-title">Setups</div><div class="ph-sub">Gear checklists for sessions</div></div><div class="empty"><div class="ico">🎛️</div><h3>No setups yet</h3><p>Tap + to create a gear checklist for a recording session.</p></div>`;
+  let h=`<div class="ph"><div class="ph-title">Setups</div><div class="ph-sub">${S.setups.length} setup${S.setups.length===1?'':'s'}</div></div>`;
+  h+=S.setups.map(s=>{const ck=s.items.filter(i=>i.checked).length,tot=s.items.length,pct=tot>0?Math.round(ck/tot*100):0;return`<div class="card" onclick="nav('setup-detail','${s.id}')"><div class="ct">${esc(s.name)}</div><div class="cs">${s.description?`<span>${esc(s.description)}</span>`:''}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot} ready</span></div>${tot>0?`<div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:var(--acc)"></div></div></div>`:''}</div>`}).join('');
+  return h;
+}
+
+// ── Setup detail ───────────────────────────────────────────
+function vSetupDetail(){
+  const s=gsetup(S.setupId);if(!s){nav('setups');return''}
+  const ck=s.items.filter(i=>i.checked).length,tot=s.items.length,pct=tot>0?Math.round(ck/tot*100):0;
+  let h=`<div class="dh">
+    <button class="back" onclick="nav('setups')">←</button>
+    <div class="dh-body">
+      <div class="dh-title">${esc(s.name)}</div>
+      ${s.description?`<div class="dh-sub">${esc(s.description)}</div>`:''}
+      ${tot>0?`<div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:var(--acc)"></div></div><div class="prog-txt"><span>${ck} ready</span><span>${pct}%</span></div></div>`:''}
+    </div>
+    <div class="dh-acts">
+      <button class="ibtn" onclick="showESetup('${s.id}')">✏️</button>
+      <button class="ibtn" onclick="confDelSetup('${s.id}')">🗑️</button>
+    </div>
+  </div><div class="items-sec">`;
+  if(!s.items.length){
+    h+=`<div class="empty"><div class="ico">📋</div><h3>No gear</h3><p>Tap + to add gear to this setup.</p></div>`;
+  } else {
+    h+=s.items.map(i=>`<div class="irow">
+      <div class="ichk${i.checked?' on':''}" style="${i.checked?'background:var(--acc);border-color:var(--acc)':''}" onclick="tSI('${s.id}','${i.id}')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div class="ibody"><div class="iname${i.checked?' strike':''}">${esc(i.name)}</div>${i.fromBox?`<div class="inotes">📦 ${esc(i.fromBox)}</div>`:''}</div>
+      <div class="iacts">
+        <button class="ibtn" onclick="showESI('${s.id}','${i.id}')">✏️</button>
+        <button class="ibtn" onclick="confDelSI('${s.id}','${i.id}')">🗑️</button>
+      </div>
+    </div>`).join('');
+  }
+  return h+'</div>';
+}
+
+// ── Search ─────────────────────────────────────────────────
+function vSearch(){return`<div class="swrap"><div class="sinwrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="sin" id="si" placeholder="Search all items…" autocomplete="off" autocorrect="off" spellcheck="false"></div></div><div id="sr">${vSearchResults()}</div>`}
+
+function vSearchResults(){
+  const q=S.q.toLowerCase().trim();
+  if(!q)return`<div class="empty"><div class="ico">🔍</div><h3>Search gear</h3><p>Type to search all items across all boxes by name or notes.</p></div>`;
+  const res=[];
+  S.boxes.forEach(b=>b.items.forEach(i=>{if(i.name.toLowerCase().includes(q)||i.notes.toLowerCase().includes(q))res.push({b,i})}));
+  if(!res.length)return`<div class="empty"><div class="ico">🤷</div><h3>No results</h3><p>Nothing matched "<strong>${esc(q)}</strong>".</p></div>`;
+  return res.map(({b,i})=>`<div class="card cb" style="border-left-color:${b.color}" onclick="nav('box-detail','${b.id}')">
+    <div class="ct">${esc(i.name)}</div>
+    <div class="cs"><span class="dot" style="background:${b.color}"></span><span>${esc(b.name)}</span>${b.location?`<span>· ${esc(b.location)}</span>`:''}</div>
+    ${i.notes?`<div style="font-size:11px;color:var(--muted);margin-top:4px">${esc(i.notes)}</div>`:''}
+  </div>`).join('');
+}
+
+// ── Init ───────────────────────────────────────────────────
+load();
+render();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
