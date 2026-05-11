@@ -6,15 +6,15 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Studio Inv">
+<meta name="apple-mobile-web-app-title" content="ToonDoof">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<title>Studio Inventory</title>
+<title>ToonDoof Inventory</title>
 <style>
-:root{--bg:#0a0a0a;--s:#111;--b:#1a1a1a;--b2:#222;--acc:#f5c842;--txt:#e8e8e8;--mut:#555;--danger:#ef4444;--nav:64px;--sc:#94a3b8;--bc:#64748b;--cb:#06b6d4}
+:root{--bg:#0a0a0a;--s:#111;--b:#1e1e1e;--b2:#2a2a2a;--acc:#f5c842;--txt:#e8e8e8;--mut:#555;--danger:#ef4444;--nav:60px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrains Mono','Courier New',monospace;font-size:14px;line-height:1.5;overflow:hidden}
 #app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
@@ -24,15 +24,15 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrai
 #bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:calc(var(--nav) + env(safe-area-inset-bottom));background:var(--s);border-top:1px solid var(--b);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
 .nb{flex:1;border:none;background:transparent;color:var(--mut);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:inherit;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .15s}
 .nb.on{color:var(--acc)}
-.nb svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none}
+.nb svg{width:21px;height:21px;stroke:currentColor;stroke-width:1.8;fill:none}
 
 /* FAB */
-#fab{position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 16px);right:max(16px,calc(50vw - 224px));width:52px;height:52px;border-radius:50%;background:var(--acc);border:none;color:#0a0a0a;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 20px rgba(245,200,66,.35);transition:transform .15s,opacity .2s}
+#fab{position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 14px);right:max(14px,calc(50vw - 226px));width:50px;height:50px;border-radius:50%;background:var(--acc);border:none;color:#0a0a0a;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 20px rgba(245,200,66,.4);transition:transform .15s,opacity .2s}
 #fab:active{transform:scale(.92)}
 #fab.hide{opacity:0;pointer-events:none}
 
 /* Modal */
-#mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center}
+#mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:flex-end;justify-content:center}
 #mo.on{display:flex}
 #mb{background:var(--s);border:1px solid var(--b);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:sup .2s ease-out}
 @keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
@@ -41,7 +41,7 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrai
 .mbd{padding:10px 20px 4px}
 
 /* Confirm */
-#cf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:24px}
+#cf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:400;align-items:center;justify-content:center;padding:24px}
 #cf.on{display:flex}
 #cfb{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:24px;width:100%;max-width:300px}
 .cf-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt);margin-bottom:8px}
@@ -50,61 +50,60 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrai
 .cf-r .btn{margin:0;flex:1}
 
 /* Toast */
-#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--s);border:1px solid var(--b);color:var(--txt);font-family:inherit;font-size:12px;font-weight:500;padding:9px 18px;border-radius:100px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:90vw}
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--s);border:1px solid var(--b);color:var(--txt);font-family:inherit;font-size:12px;font-weight:500;padding:9px 18px;border-radius:100px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:90vw}
 #toast.on{opacity:1}
 
 /* Sync badge */
-#sync{position:fixed;top:12px;right:max(12px,calc(50vw - 228px));font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:100px;background:var(--b2);border:1px solid var(--b);z-index:150;transition:all .3s}
-#sync.ok{color:#22c55e;border-color:#22c55e33}
-#sync.ing{color:var(--acc);border-color:#f5c84233}
-#sync.err{color:var(--danger);border-color:#ef444433}
+#sync{position:fixed;top:10px;right:max(10px,calc(50vw - 230px));font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:100px;background:var(--b2);border:1px solid var(--b);z-index:150;transition:all .3s}
+#sync.ok{color:#22c55e;border-color:#22c55e44}
+#sync.ing{color:var(--acc);border-color:#f5c84244}
+#sync.err{color:var(--danger);border-color:#ef444444}
 #sync.off{color:var(--mut)}
 
-/* Pack Mode full-screen */
+/* Pack Mode */
 #pack-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;flex-direction:column;max-width:480px;margin:0 auto}
 #pack-screen.on{display:flex}
-.pack-head{padding:16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;flex-shrink:0}
-.pack-body{flex:1;overflow-y:auto;padding-bottom:100px}
+.pack-head{padding:14px 16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;flex-shrink:0;background:var(--s)}
+.pack-body{flex:1;overflow-y:auto;padding-bottom:88px}
 .pack-foot{position:absolute;bottom:env(safe-area-inset-bottom);left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--b);display:flex;gap:8px}
 
 /* Cards */
-.card{background:var(--s);border:1px solid var(--b);border-radius:8px;margin:0 16px 8px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:opacity .15s}
-.card:active{opacity:.75}
+.card{background:var(--s);border:1px solid var(--b);border-radius:8px;margin:0 14px 8px;padding:13px 14px;cursor:pointer;position:relative;overflow:hidden;transition:opacity .15s}
+.card:active{opacity:.72}
 .card.bl{border-left-width:3px}
 
 /* Progress */
 .prog{height:3px;background:var(--b);border-radius:2px;overflow:hidden;margin-top:8px}
-.pf{height:100%;border-radius:2px;transition:width .3s}
+.pf{height:100%;border-radius:2px;transition:width .35s}
 .pt{font-size:10px;color:var(--mut);margin-top:4px;display:flex;justify-content:space-between}
 
 /* Badges */
-.badge{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:100px;border:1px solid transparent}
-.badge-loc-studio{color:#22c55e;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2)}
-.badge-loc-gig{color:#f97316;background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.2)}
-.badge-loc-transit{color:#a855f7;background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.2)}
-.badge-packed{color:#22c55e;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2)}
+.badge{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:100px;border:1px solid transparent}
+.badge-loc-studio{color:#22c55e;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25)}
+.badge-loc-gig{color:#f97316;background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.25)}
+.badge-loc-transit{color:#a855f7;background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.25)}
+.badge-packed{color:#22c55e;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25)}
 .badge-unpacked{color:var(--mut);background:var(--b2);border-color:var(--b)}
-.badge-packing{color:var(--acc);background:rgba(245,200,66,.1);border-color:rgba(245,200,66,.2)}
-.badge-sc{color:var(--sc);background:rgba(148,163,184,.1);border-color:rgba(148,163,184,.2)}
-.badge-bc{color:var(--bc);background:rgba(100,116,139,.1);border-color:rgba(100,116,139,.2)}
-.badge-cb{color:var(--cb);background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.2)}
+.badge-packing{color:var(--acc);background:rgba(245,200,66,.1);border-color:rgba(245,200,66,.25)}
+.badge-sc{color:#94a3b8;background:rgba(148,163,184,.1);border-color:rgba(148,163,184,.25)}
+.badge-bc{color:#64748b;background:rgba(100,116,139,.1);border-color:rgba(100,116,139,.25)}
+.badge-cb{color:#06b6d4;background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.25)}
 
 /* Page header */
-.ph{padding:18px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between}
-.ph-l .pt{font-size:20px;font-weight:700;color:var(--txt);margin:0}
-.ph-l .ps{font-size:11px;color:var(--mut);margin-top:3px}
-.ph-r{display:flex;gap:8px;flex-shrink:0}
+.ph{padding:16px 14px 6px;display:flex;align-items:flex-start;justify-content:space-between}
+.ph-title{font-size:20px;font-weight:700;color:var(--txt)}
+.ph-sub{font-size:11px;color:var(--mut);margin-top:2px}
 
 /* Detail header */
-.dh{padding:14px 16px 12px;border-bottom:1px solid var(--b);display:flex;align-items:flex-start;gap:12px}
+.dh{padding:14px 14px 12px;border-bottom:1px solid var(--b);display:flex;align-items:flex-start;gap:10px}
 .back{width:32px;height:32px;border-radius:8px;border:1px solid var(--b);background:var(--s);color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
-.dh-b{flex:1;min-width:0}
-.dh-t{font-size:17px;font-weight:700;color:var(--txt);word-break:break-word}
-.dh-s{font-size:11px;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.dh-a{display:flex;gap:4px;flex-shrink:0}
+.dh-body{flex:1;min-width:0}
+.dh-title{font-size:17px;font-weight:700;color:var(--txt);word-break:break-word}
+.dh-sub{font-size:11px;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dh-acts{display:flex;gap:4px;flex-shrink:0}
 
 /* Item rows */
-.irow{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b)}
+.irow{display:flex;align-items:flex-start;gap:11px;padding:11px 14px;border-bottom:1px solid var(--b)}
 .irow:last-child{border-bottom:none}
 .ick{width:22px;height:22px;border-radius:5px;border:2px solid var(--b2);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .ick.on{border-color:transparent}
@@ -119,67 +118,67 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrai
 .ib2{width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
 .ib2:active{background:var(--b)}
 
-/* Pack item row - bigger */
-.pick{width:32px;height:32px;border-radius:8px;border:2px solid var(--b2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+/* Pack item row bigger */
+.pick{width:34px;height:34px;border-radius:8px;border:2px solid var(--b2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .pick.on{border-color:transparent}
 .pick svg{width:18px;height:18px;stroke:#0a0a0a;stroke-width:2.5;fill:none;display:none}
 .pick.on svg{display:block}
 
-/* Lbl */
-.lbl{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mut);padding:14px 16px 6px}
+/* Labels */
+.lbl{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mut);padding:14px 14px 6px}
 
 /* Form */
-.fg{margin-bottom:14px}
+.fg{margin-bottom:13px}
 .fl{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
-.fi{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s}
+.fi{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s}
 .fi:focus{border-color:var(--acc)}
 .fi::placeholder{color:var(--mut)}
-textarea.fi{resize:none;min-height:64px}
+textarea.fi{resize:none;min-height:60px}
 select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
 
 /* Buttons */
-.btn{display:block;width:100%;padding:12px;border-radius:8px;border:none;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;margin-top:6px}
-.btn:active{opacity:.8}
+.btn{display:block;width:100%;padding:11px;border-radius:8px;border:none;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;margin-top:6px}
+.btn:active{opacity:.78}
 .btn-p{background:var(--acc);color:#0a0a0a}
 .btn-d{background:var(--danger);color:#fff}
 .btn-g{background:transparent;border:1px solid var(--b);color:var(--mut)}
 .btn-sm{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:10px;width:auto}
 
-/* Filter pills */
-.pills{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none}
+/* Pills */
+.pills{display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none}
 .pills::-webkit-scrollbar{display:none}
-.pill{flex-shrink:0;padding:5px 12px;border-radius:100px;border:1px solid var(--b);background:var(--b2);color:var(--mut);font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .15s}
+.pill{flex-shrink:0;padding:5px 11px;border-radius:100px;border:1px solid var(--b);background:var(--b2);color:var(--mut);font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .15s}
 .pill.on{background:var(--acc);border-color:var(--acc);color:#0a0a0a}
 
 /* Stats */
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 14px 8px}
 .stat{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px 8px;text-align:center}
-.sn{font-size:26px;font-weight:700;color:var(--acc);line-height:1;margin-bottom:3px}
+.sn{font-size:24px;font-weight:700;color:var(--acc);line-height:1;margin-bottom:3px}
 .sl{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
 
 /* Member chips */
-.members{display:flex;gap:8px;padding:8px 16px 12px}
-.mchip{flex:1;padding:10px 8px;border-radius:8px;border:2px solid var(--b);background:var(--s);cursor:pointer;text-align:center;transition:all .15s}
+.members{display:flex;gap:7px;padding:6px 14px 10px}
+.mchip{flex:1;padding:9px 6px;border-radius:8px;border:2px solid var(--b);background:var(--s);cursor:pointer;text-align:center;transition:all .15s;min-width:0}
 .mchip.on{border-width:2px}
-.mchip-n{font-size:11px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mchip-n{font-size:10px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mchip-role{font-size:9px;color:var(--mut);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mchip-dot{width:8px;height:8px;border-radius:50%;margin:4px auto 0}
 
 /* Activity */
-.act-row{display:flex;gap:10px;padding:9px 16px;border-bottom:1px solid var(--b);align-items:flex-start}
+.act-row{display:flex;gap:10px;padding:9px 14px;border-bottom:1px solid var(--b);align-items:flex-start}
 .act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
 .act-t{font-size:11px;color:var(--txt);flex:1}
 .act-time{font-size:10px;color:var(--mut);flex-shrink:0}
 
-/* Type selector in modal */
+/* Type grid */
 .type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.type-opt{padding:14px 8px;border-radius:8px;border:2px solid var(--b);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s}
+.type-opt{padding:12px 6px;border-radius:8px;border:2px solid var(--b);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s}
 .type-opt.sel{border-width:2px}
-.type-opt-icon{font-size:22px;margin-bottom:4px}
-.type-opt-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt)}
-.type-opt-code{font-size:9px;color:var(--mut);margin-top:2px}
+.type-opt-label{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.type-opt-code{font-size:9px;color:var(--mut);margin-top:3px}
 
 /* Search */
-.sw{padding:10px 16px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--b)}
+.sw{padding:10px 14px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--b)}
 .siw{position:relative}
 .siw svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--mut);stroke-width:2;fill:none}
 .si{width:100%;background:var(--s);border:1px solid var(--b);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:9px 12px 9px 34px;outline:none;transition:border-color .15s}
@@ -190,57 +189,42 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 .dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
 
 /* Empty */
-.empty{text-align:center;padding:52px 32px;color:var(--mut)}
-.empty .ico{font-size:38px;margin-bottom:14px}
+.empty{text-align:center;padding:48px 32px;color:var(--mut)}
+.empty .ico{font-size:36px;margin-bottom:12px}
 .empty h3{font-size:11px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
 .empty p{font-size:11px;line-height:1.7}
 
-/* Setup screen */
-.setup-screen{min-height:100%;background:var(--bg);padding:40px 24px;display:flex;flex-direction:column;gap:0}
-.setup-logo{font-size:28px;font-weight:700;color:var(--acc);letter-spacing:-.5px;margin-bottom:4px}
-.setup-sub{font-size:11px;color:var(--mut);margin-bottom:32px}
-.setup-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
-.setup-step-n{width:22px;height:22px;border-radius:50%;background:var(--acc);color:#0a0a0a;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.setup-step-t{font-size:12px;color:var(--txt);line-height:1.5}
-.setup-step-t a{color:var(--acc);text-decoration:none}
-.setup-divider{height:1px;background:var(--b);margin:20px 0}
-
 /* Location toggle */
 .loc-toggle{display:flex;gap:6px;flex-wrap:wrap}
-.loc-btn{padding:6px 12px;border-radius:100px;border:1px solid var(--b);background:var(--bg);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--mut)}
+.loc-btn{padding:6px 11px;border-radius:100px;border:1px solid var(--b);background:var(--bg);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--mut)}
 .loc-btn.on-studio{background:rgba(34,197,94,.12);border-color:#22c55e;color:#22c55e}
 .loc-btn.on-gig{background:rgba(249,115,22,.12);border-color:#f97316;color:#f97316}
 .loc-btn.on-transit{background:rgba(168,85,247,.12);border-color:#a855f7;color:#a855f7}
 
-/* Catalog category pill colors */
+/* Catalog */
 .cat-cables{color:#f59e0b}.cat-mics{color:#ef4444}.cat-stands{color:#8b5cf6}.cat-drums{color:#f97316}.cat-guitar{color:#3b82f6}.cat-keys{color:#ec4899}.cat-audio{color:#06b6d4}.cat-misc{color:var(--mut)}
 
-/* Section actions */
-.sec-row{display:flex;align-items:center;justify-content:space-between;padding:0 16px 4px}
-
-/* Icon button */
-.icon-btn{width:30px;height:30px;border-radius:6px;border:none;background:transparent;color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px}
-.icon-btn:active{background:var(--b)}
-
-/* Color swatch for member */
-.cswatch{display:flex;gap:10px;flex-wrap:wrap}
-.csw{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .1s}
-.csw.sel{border-color:#fff;transform:scale(1.15)}
-
-/* Search catalog in add-item modal */
-.cat-list{max-height:220px;overflow-y:auto;border:1px solid var(--b);border-radius:8px;margin-top:6px}
-.cat-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--b);cursor:pointer;transition:background .1s}
+/* Catalog search list */
+.cat-list{max-height:200px;overflow-y:auto;border:1px solid var(--b);border-radius:8px;margin-top:6px;background:var(--bg)}
+.cat-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--b);cursor:pointer;transition:background .1s}
 .cat-item:last-child{border-bottom:none}
-.cat-item:active{background:var(--b2)}
+.cat-item:active,.cat-item.sel{background:rgba(245,200,66,.08)}
 .cat-item-n{font-size:12px;color:var(--txt);flex:1}
 .cat-item-c{font-size:10px;color:var(--mut)}
-.cat-item.sel-item{background:rgba(245,200,66,.08)}
 
-/* Qty input */
+/* Qty */
 .qty-row{display:flex;align-items:center;gap:8px}
 .qty-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--b);background:var(--bg);color:var(--txt);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .qty-val{width:48px;text-align:center;background:var(--bg);border:1px solid var(--b);border-radius:6px;color:var(--txt);font-family:inherit;font-size:14px;font-weight:700;padding:6px;outline:none}
 .qty-val:focus{border-color:var(--acc)}
+
+/* Settings sections */
+.set-sec{border-top:1px solid var(--b);margin-top:16px;padding-top:14px}
+.set-sec:first-child{border-top:none;margin-top:0;padding-top:0}
+
+/* Firebase banner */
+.fb-banner{margin:0 14px 8px;padding:10px 14px;background:rgba(245,200,66,.07);border:1px solid rgba(245,200,66,.2);border-radius:8px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.fb-banner:active{opacity:.8}
 </style>
 </head>
 <body>
@@ -263,15 +247,15 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
   <button id="fab" onclick="handleFab()">+</button>
 </div>
 
-<!-- Pack Mode -->
+<!-- Pack Mode overlay -->
 <div id="pack-screen">
   <div class="pack-head">
     <button class="back" onclick="exitPack()">←</button>
     <div style="flex:1">
       <div id="pack-title" style="font-size:15px;font-weight:700"></div>
-      <div style="font-size:11px;color:var(--mut);margin-top:2px">Pack Mode</div>
-      <div class="prog"><div class="pf" id="pack-prog-fill" style="background:var(--acc)"></div></div>
-      <div class="pt"><span id="pack-prog-txt"></span><span id="pack-prog-pct"></span></div>
+      <div style="font-size:10px;color:var(--mut);margin-top:1px">PACK MODE</div>
+      <div class="prog"><div class="pf" id="pack-pf" style="background:var(--acc)"></div></div>
+      <div class="pt"><span id="pack-pt-l"></span><span id="pack-pt-r"></span></div>
     </div>
   </div>
   <div class="pack-body" id="pack-body"></div>
@@ -283,11 +267,7 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 
 <!-- Modal -->
 <div id="mo" onclick="moClick(event)">
-  <div id="mb">
-    <div class="mh"></div>
-    <div class="mt" id="mt"></div>
-    <div class="mbd" id="mbd"></div>
-  </div>
+  <div id="mb"><div class="mh"></div><div class="mt" id="mt"></div><div class="mbd" id="mbd"></div></div>
 </div>
 
 <!-- Confirm -->
@@ -303,12 +283,12 @@ select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=
 </div>
 
 <div id="toast"></div>
-<div id="sync"></div>
+<div id="sync" class="off"></div>
 
 <script>
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONSTANTS
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 const CT = {
   sc:{label:'Silver Case',prefix:'SC',color:'#94a3b8'},
   bc:{label:'Black Crate',prefix:'BC',color:'#64748b'},
@@ -320,687 +300,701 @@ const LOCS = {
   transit:{label:'Transit',icon:'🚐'},
 };
 const CATS = {
-  cables:{label:'Cables'},mics:{label:'Mics'},stands:{label:'Stands'},
-  drums:{label:'Drums'},guitar:{label:'Guitar/Bass'},keys:{label:'Keys'},
-  audio:{label:'Audio/DI'},misc:{label:'Misc'},
+  cables:{label:'Cables'},
+  mics:{label:'Mics'},
+  stands:{label:'Stands'},
+  guitar:{label:'Guitar/Bass'},
+  keys:{label:'Keys'},
+  audio:{label:'Audio/DI'},
+  misc:{label:'Misc'},
 };
-const MCOLORS = ['#f5c842','#3b82f6','#22c55e','#ef4444','#a855f7','#f97316'];
+const MCOLORS = ['#f97316','#3b82f6','#a855f7','#f5c842','#22c55e','#ef4444','#06b6d4'];
+
+// ToonDoof-specific catalog
 const SEED = [
-  {id:'s01',name:'XLR Cable 1m',cat:'cables'},{id:'s02',name:'XLR Cable 3m',cat:'cables'},
-  {id:'s03',name:'XLR Cable 6m',cat:'cables'},{id:'s04',name:'XLR Cable 10m',cat:'cables'},
-  {id:'s05',name:'Guitar Cable 3m',cat:'cables'},{id:'s06',name:'Guitar Cable 6m',cat:'cables'},
-  {id:'s07',name:'Patch Cable',cat:'cables'},{id:'s08',name:'TRS Cable',cat:'cables'},
-  {id:'s09',name:'Speaker Cable',cat:'cables'},{id:'s10',name:'Snake / Multicore',cat:'cables'},
-  {id:'s11',name:'SM58 Dynamic Mic',cat:'mics'},{id:'s12',name:'SM57 Dynamic Mic',cat:'mics'},
-  {id:'s13',name:'Condenser Mic',cat:'mics'},{id:'s14',name:'Mic Clip',cat:'mics'},
-  {id:'s15',name:'Mic Stand (Boom)',cat:'stands'},{id:'s16',name:'Mic Stand (Straight)',cat:'stands'},
-  {id:'s17',name:'Guitar Stand',cat:'stands'},{id:'s18',name:'Keyboard Stand',cat:'stands'},
-  {id:'s19',name:'Drumsticks',cat:'drums'},{id:'s20',name:'Snare Drum',cat:'drums'},
-  {id:'s21',name:'Bass Drum Pedal',cat:'drums'},{id:'s22',name:'Hi-Hat Stand',cat:'drums'},
-  {id:'s23',name:'Cymbal Stand (Straight)',cat:'drums'},{id:'s24',name:'Cymbal Stand (Boom)',cat:'drums'},
-  {id:'s25',name:'Drum Key',cat:'drums'},{id:'s26',name:'Drum Rug',cat:'drums'},
-  {id:'s27',name:'Drum Stool',cat:'drums'},{id:'s28',name:'Guitar Strings (set)',cat:'guitar'},
-  {id:'s29',name:'Bass Strings (set)',cat:'guitar'},{id:'s30',name:'Guitar Picks',cat:'guitar'},
-  {id:'s31',name:'Capo',cat:'guitar'},{id:'s32',name:'Clip-on Tuner',cat:'guitar'},
-  {id:'s33',name:'Guitar Strap',cat:'guitar'},{id:'s34',name:'Guitar (instrument)',cat:'guitar'},
-  {id:'s35',name:'Bass Guitar (instrument)',cat:'guitar'},{id:'s36',name:'Keyboard / Synth',cat:'keys'},
-  {id:'s37',name:'Sustain Pedal',cat:'keys'},{id:'s38',name:'Expression Pedal',cat:'keys'},
-  {id:'s39',name:'DI Box (Passive)',cat:'audio'},{id:'s40',name:'DI Box (Active)',cat:'audio'},
-  {id:'s41',name:'Audio Interface',cat:'audio'},{id:'s42',name:'Headphones',cat:'audio'},
-  {id:'s43',name:'In-Ear Monitors (IEM)',cat:'audio'},{id:'s44',name:'Monitor Speaker',cat:'audio'},
-  {id:'s45',name:'Extension Lead',cat:'misc'},{id:'s46',name:'Power Strip (surge)',cat:'misc'},
-  {id:'s47',name:'Gaffer Tape',cat:'misc'},{id:'s48',name:'Spare Batteries',cat:'misc'},
-  {id:'s49',name:'Setlist / Notebook',cat:'misc'},{id:'s50',name:'Pen / Marker',cat:'misc'},
-  {id:'s51',name:'LED Light',cat:'misc'},{id:'s52',name:'Equipment Rack',cat:'misc'},
+  // Microphones
+  {id:'t01',name:'Shure SM58 — Evan (vocal)',cat:'mics'},
+  {id:'t02',name:'Shure SM58 — Janus (vocal)',cat:'mics'},
+  {id:'t03',name:'Amp Cabinet Mic',cat:'mics'},
+  {id:'t04',name:'Mic Clip',cat:'mics'},
+  // Guitars & Bass
+  {id:'t05',name:'Fender Stratocaster (Evan)',cat:'guitar'},
+  {id:'t06',name:'Electric Guitar (Evan)',cat:'guitar'},
+  {id:'t07',name:'Acoustic Guitar (Janus)',cat:'guitar'},
+  {id:'t08',name:'Bass Guitar (Sanet)',cat:'guitar'},
+  // Keys & Harmonica
+  {id:'t09',name:'Keyboard (Evan)',cat:'keys'},
+  {id:'t10',name:'Harmonica — Key of G (Evan)',cat:'misc'},
+  {id:'t11',name:'Harmonica — Key of C (Evan)',cat:'misc'},
+  // Amps & Electronics
+  {id:'t12',name:'Marshall MG50GFX Amp',cat:'audio'},
+  {id:'t13',name:'Boss BD-2 Blues Driver Pedal',cat:'audio'},
+  {id:'t14',name:'Boss DR-880 Drum Machine',cat:'audio'},
+  {id:'t15',name:'Marshall Amp Footswitch',cat:'audio'},
+  // PA & Mixer
+  {id:'t16',name:'Wharfedale 15" PA Speaker',cat:'audio'},
+  {id:'t17',name:'Mixer',cat:'audio'},
+  {id:'t18',name:'DI Box (Passive)',cat:'audio'},
+  {id:'t19',name:'DI Box (Active)',cat:'audio'},
+  // Cables
+  {id:'t20',name:'XLR Cable 1m',cat:'cables'},
+  {id:'t21',name:'XLR Cable 3m',cat:'cables'},
+  {id:'t22',name:'XLR Cable 6m',cat:'cables'},
+  {id:'t23',name:'XLR Cable 10m',cat:'cables'},
+  {id:'t24',name:'Guitar Cable 3m',cat:'cables'},
+  {id:'t25',name:'Guitar Cable 6m',cat:'cables'},
+  {id:'t26',name:'TRS Cable',cat:'cables'},
+  {id:'t27',name:'Speaker Cable',cat:'cables'},
+  {id:'t28',name:'AUX Cable',cat:'cables'},
+  {id:'t29',name:'Spare / Extra Cable',cat:'cables'},
+  // Stands
+  {id:'t30',name:'Mic Stand (Boom)',cat:'stands'},
+  {id:'t31',name:'Mic Stand (Straight)',cat:'stands'},
+  {id:'t32',name:'Keyboard Stand',cat:'stands'},
+  {id:'t33',name:'Speaker Stand',cat:'stands'},
+  {id:'t34',name:'Music Stand',cat:'stands'},
+  {id:'t35',name:'Mixer Stand',cat:'stands'},
+  // Guitar accessories
+  {id:'t36',name:'Capo',cat:'guitar'},
+  {id:'t37',name:'Guitar Picks',cat:'guitar'},
+  {id:'t38',name:'Guitar Strings 9-42 (Evan electric)',cat:'guitar'},
+  {id:'t39',name:'Guitar Strings 12-53 (Janus acoustic)',cat:'guitar'},
+  {id:'t40',name:'Bass Strings 45-105 (Sanet)',cat:'guitar'},
+  {id:'t41',name:'Clip-on Tuner',cat:'guitar'},
+  {id:'t42',name:'Guitar Strap',cat:'guitar'},
+  // Power & misc
+  {id:'t43',name:'Extension Lead',cat:'misc'},
+  {id:'t44',name:'Power Strip (surge protected)',cat:'misc'},
+  {id:'t45',name:'Gaffer Tape',cat:'misc'},
+  {id:'t46',name:'Setlist / Notebook',cat:'misc'},
+  {id:'t47',name:'Pen / Marker',cat:'misc'},
+  {id:'t48',name:'Spare Batteries',cat:'misc'},
 ];
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // STATE
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 let DB = {
-  bandName:'The Studio',
-  members:[
-    {id:'m1',name:'Member 1',color:'#f5c842'},
-    {id:'m2',name:'Member 2',color:'#3b82f6'},
-    {id:'m3',name:'Member 3',color:'#22c55e'},
+  bandName: 'ToonDoof',
+  members: [
+    {id:'m1',name:'Evan',role:'Vocals / Guitar / Keys',color:'#f97316'},
+    {id:'m2',name:'Janus',role:'Vocals / Guitar / Drum',color:'#3b82f6'},
+    {id:'m3',name:'Sanet',role:'Bass Guitar',color:'#a855f7'},
   ],
-  catalog:[],
-  containers:[],
-  activity:[],
-  _v:0,
+  catalog: [],
+  containers: [],
+  activity: [],
+  _v: 0,
 };
 let APP = {
-  view:'setup',
-  containerId:null,
-  filterType:'all',
-  filterLoc:'all',
-  filterCat:'all',
-  searchQ:'',
-  currentMember:null,
-  dbUrl:null,
-  syncStatus:'off',
-  packContainerId:null,
-  setupStep:1, // 1=firebase, 2=members
+  view: 'home',
+  containerId: null,
+  filterType: 'all',
+  filterLoc: 'all',
+  filterCat: 'all',
+  searchQ: '',
+  currentMember: null,
+  dbUrl: null,
+  syncStatus: 'off',
+  packCid: null,
 };
-let _addItemCatId = null;
-let _addItemQty = 1;
 let _selType = 'sc';
+let _addCatId = null;
+let _addQty = 1;
 let _pollTimer = null;
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PERSISTENCE
-// ═══════════════════════════════════════════
-function loadLocal(){
-  try{const d=JSON.parse(localStorage.getItem('studio-db')||'{}');if(d._v!==undefined)DB=Object.assign(DB,d);}catch(e){}
-  APP.dbUrl=localStorage.getItem('studio-fb-url')||null;
-  APP.currentMember=localStorage.getItem('studio-member')||null;
-  if(localStorage.getItem('studio-ready')==='1'){APP.view='home';}
-}
-function saveLocal(){localStorage.setItem('studio-db',JSON.stringify(DB));}
-
-// ═══════════════════════════════════════════
-// FIREBASE SYNC
-// ═══════════════════════════════════════════
-function setSyncStatus(s){
-  APP.syncStatus=s;
-  const el=document.getElementById('sync');
-  if(!el)return;
-  const map={synced:{cls:'ok',txt:'● Synced'},syncing:{cls:'ing',txt:'↑ Syncing'},error:{cls:'err',txt:'✕ Sync Error'},off:{cls:'off',txt:'○ Offline'}};
-  const m=map[s]||map.off;
-  el.className=m.cls;el.textContent=m.txt;
-}
-
-async function fbGet(){
-  if(!APP.dbUrl)return null;
-  try{
-    const r=await fetch(APP.dbUrl+'/studio.json');
-    if(!r.ok)return null;
-    return await r.json();
-  }catch(e){return null;}
-}
-async function fbPut(data){
-  if(!APP.dbUrl)return false;
-  try{
-    const r=await fetch(APP.dbUrl+'/studio.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-    return r.ok;
-  }catch(e){return false;}
-}
-
-async function syncPull(){
-  if(!APP.dbUrl){setSyncStatus('off');return;}
-  const remote=await fbGet();
-  if(!remote){setSyncStatus('error');return;}
-  if((remote._v||0)>DB._v){
-    DB=Object.assign({},DB,remote);
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function loadLocal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('td-db') || '{}');
+    if (d._v !== undefined) DB = Object.assign({}, DB, d);
+  } catch(e) {}
+  APP.dbUrl = localStorage.getItem('td-fburl') || null;
+  APP.currentMember = localStorage.getItem('td-member') || null;
+  // First run: seed catalog + members
+  if (!localStorage.getItem('td-init')) {
+    DB.catalog = [...SEED];
+    DB._v = 0;
+    localStorage.setItem('td-init', '1');
     saveLocal();
-    render();
   }
-  setSyncStatus('synced');
 }
-async function syncPush(){
-  saveLocal();
-  if(!APP.dbUrl){setSyncStatus('off');return;}
-  setSyncStatus('syncing');
-  DB._v=(DB._v||0)+1;
-  saveLocal();
-  const ok=await fbPut(DB);
-  setSyncStatus(ok?'synced':'error');
+function saveLocal() {
+  localStorage.setItem('td-db', JSON.stringify(DB));
 }
-function startPoll(){
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FIREBASE SYNC
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function setSyncUI(s) {
+  APP.syncStatus = s;
+  const el = document.getElementById('sync');
+  if (!el) return;
+  const m = {synced:{c:'ok',t:'● Synced'},syncing:{c:'ing',t:'↑ Syncing'},error:{c:'err',t:'✕ Error'},off:{c:'off',t:'○ Offline'}};
+  const r = m[s] || m.off;
+  el.className = r.c; el.textContent = r.t;
+}
+async function fbGet() {
+  if (!APP.dbUrl) return null;
+  try { const r = await fetch(APP.dbUrl+'/td.json'); return r.ok ? r.json() : null; } catch(e) { return null; }
+}
+async function fbPut(data) {
+  if (!APP.dbUrl) return false;
+  try { const r = await fetch(APP.dbUrl+'/td.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}); return r.ok; } catch(e) { return false; }
+}
+async function syncPull() {
+  if (!APP.dbUrl) { setSyncUI('off'); return; }
+  const remote = await fbGet();
+  if (!remote) { setSyncUI('error'); return; }
+  if ((remote._v||0) > DB._v) {
+    DB = Object.assign({}, DB, remote);
+    saveLocal(); render();
+  }
+  setSyncUI('synced');
+}
+async function syncPush() {
+  saveLocal();
+  if (!APP.dbUrl) { setSyncUI('off'); return; }
+  setSyncUI('syncing');
+  DB._v = (DB._v||0) + 1;
+  saveLocal();
+  const ok = await fbPut(DB);
+  setSyncUI(ok ? 'synced' : 'error');
+}
+function startPoll() {
   clearInterval(_pollTimer);
-  _pollTimer=setInterval(syncPull,30000);
   syncPull();
+  _pollTimer = setInterval(syncPull, 25000);
 }
-async function connectFirebase(url){
-  const clean=url.trim().replace(/\/+$/,'');
-  APP.dbUrl=clean;
-  localStorage.setItem('studio-fb-url',clean);
-  setSyncStatus('syncing');
-  const remote=await fbGet();
-  if(remote===null){APP.dbUrl=null;localStorage.removeItem('studio-fb-url');return false;}
-  if(remote&&(remote._v||0)>0){DB=Object.assign({},DB,remote);saveLocal();}
-  else{await syncPush();}
+async function connectFirebase(url) {
+  const u = url.trim().replace(/\/+$/, '');
+  APP.dbUrl = u;
+  localStorage.setItem('td-fburl', u);
+  setSyncUI('syncing');
+  const remote = await fbGet();
+  if (remote === null) { APP.dbUrl = null; localStorage.removeItem('td-fburl'); return false; }
+  if (remote && (remote._v||0) > 0) { DB = Object.assign({}, DB, remote); saveLocal(); }
+  else { await syncPush(); }
   startPoll();
   return true;
 }
 
-// ═══════════════════════════════════════════
-// UTILITIES
-// ═══════════════════════════════════════════
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function gbox(id){return DB.containers.find(c=>c.id===id)}
-function gmem(id){return DB.members.find(m=>m.id===id)}
-function nextCode(type){
-  const prefix=CT[type]?.prefix||'XX';
-  const nums=DB.containers.filter(c=>c.type===type).map(c=>c.number||0);
-  const max=nums.length?Math.max(...nums):0;
-  return{prefix,number:max+1,code:`${prefix}-${String(max+1).padStart(2,'0')}`};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// UTILS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function gcon(id) { return DB.containers.find(c => c.id === id); }
+function gmem(id) { return DB.members.find(m => m.id === id); }
+function nextCode(type) {
+  const prefix = CT[type]?.prefix || 'XX';
+  const nums = DB.containers.filter(c => c.type === type).map(c => c.number || 0);
+  const n = nums.length ? Math.max(...nums) + 1 : 1;
+  return { number: n, code: `${prefix}-${String(n).padStart(2,'0')}` };
 }
-function timeAgo(ts){
-  const d=Date.now()-ts;
-  if(d<60000)return'just now';
-  if(d<3600000)return Math.floor(d/60000)+'m ago';
-  if(d<86400000)return Math.floor(d/3600000)+'h ago';
-  return Math.floor(d/86400000)+'d ago';
+function timeAgo(ts) {
+  const d = Date.now() - ts;
+  if (d < 60000) return 'just now';
+  if (d < 3600000) return Math.floor(d/60000) + 'm ago';
+  if (d < 86400000) return Math.floor(d/3600000) + 'h ago';
+  return Math.floor(d/86400000) + 'd ago';
 }
-function logActivity(text,memberId){
-  const act={id:uid(),text,time:Date.now(),memberId:memberId||APP.currentMember||null};
-  DB.activity.unshift(act);
-  if(DB.activity.length>50)DB.activity=DB.activity.slice(0,50);
+function logAct(text) {
+  DB.activity.unshift({id:uid(), text, time:Date.now(), memberId:APP.currentMember||null});
+  if (DB.activity.length > 60) DB.activity = DB.activity.slice(0, 60);
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONTAINER CRUD
-// ═══════════════════════════════════════════
-function cContainer(type,name,assignedTo,location){
-  const {number,code}=nextCode(type);
-  const c={id:uid(),type,number,code,name:name||'',assignedTo:assignedTo||null,location:location||'studio',packStatus:'unpacked',items:[],createdAt:Date.now()};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function createContainer(type, name, assignedTo, location) {
+  const {number, code} = nextCode(type);
+  const c = {id:uid(), type, number, code, name:name||'', assignedTo:assignedTo||null, location:location||'studio', packStatus:'unpacked', items:[], createdAt:Date.now()};
   DB.containers.unshift(c);
-  const mem=gmem(assignedTo);
-  logActivity(`Created ${code}${name?' "'+name+'"':''}`);
+  logAct(`Created ${code}${name ? ' "'+name+'"' : ''}`);
   syncPush();
   return c;
 }
-function uContainer(id,name,assignedTo,location){
-  const c=gbox(id);if(!c)return;
-  c.name=name||'';c.assignedTo=assignedTo||null;c.location=location||'studio';
-  logActivity(`Updated ${c.code}`);
+function updateContainer(id, name, assignedTo, location) {
+  const c = gcon(id); if (!c) return;
+  c.name = name||''; c.assignedTo = assignedTo||null; c.location = location||'studio';
+  logAct(`Updated ${c.code}`);
   syncPush();
 }
-function dContainer(id){
-  const c=gbox(id);
-  logActivity(`Deleted ${c?.code}`);
-  DB.containers=DB.containers.filter(x=>x.id!==id);
+function deleteContainer(id) {
+  const c = gcon(id);
+  logAct(`Deleted ${c?.code}`);
+  DB.containers = DB.containers.filter(x => x.id !== id);
   syncPush();
 }
-function setLocation(containerId,loc){
-  const c=gbox(containerId);if(!c)return;
-  c.location=loc;
-  logActivity(`${c.code} moved to ${LOCS[loc]?.label||loc}`);
-  syncPush();
-  render();
+function setLoc(cid, loc) {
+  const c = gcon(cid); if (!c) return;
+  c.location = loc;
+  logAct(`${c.code} → ${LOCS[loc]?.label}`);
+  syncPush(); render();
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // ITEM CRUD
-// ═══════════════════════════════════════════
-function addItem(containerId,catalogId,name,qty,notes){
-  const c=gbox(containerId);if(!c)return;
-  c.items.push({id:uid(),catalogId:catalogId||null,name,qty:qty||1,notes:notes||'',packed:false});
-  logActivity(`Added "${name}" to ${c.code}`);
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function addItem(cid, catId, name, qty, notes) {
+  const c = gcon(cid); if (!c) return;
+  c.items.push({id:uid(), catalogId:catId||null, name, qty:qty||1, notes:notes||'', packed:false});
+  logAct(`Added "${name}" → ${c.code}`);
   syncPush();
 }
-function uItem(containerId,itemId,name,qty,notes){
-  const c=gbox(containerId);if(!c)return;
-  const i=c.items.find(x=>x.id===itemId);if(!i)return;
-  i.name=name;i.qty=qty||1;i.notes=notes||'';
+function updateItem(cid, iid, name, qty, notes) {
+  const c = gcon(cid); if (!c) return;
+  const i = c.items.find(x => x.id === iid); if (!i) return;
+  i.name = name; i.qty = qty||1; i.notes = notes||'';
   syncPush();
 }
-function dItem(containerId,itemId){
-  const c=gbox(containerId);if(!c)return;
-  c.items=c.items.filter(x=>x.id!==itemId);
+function deleteItem(cid, iid) {
+  const c = gcon(cid); if (!c) return;
+  const i = c.items.find(x => x.id === iid);
+  logAct(`Removed "${i?.name}" from ${c.code}`);
+  c.items = c.items.filter(x => x.id !== iid);
   syncPush();
 }
-function togglePacked(containerId,itemId){
-  const c=gbox(containerId);if(!c)return;
-  const i=c.items.find(x=>x.id===itemId);if(!i)return;
-  i.packed=!i.packed;
-  const allPacked=c.items.length>0&&c.items.every(x=>x.packed);
-  if(allPacked){c.packStatus='packed';logActivity(`${c.code} fully packed`);}
-  else if(c.items.some(x=>x.packed)){c.packStatus='packing';}
-  else{c.packStatus='unpacked';}
+function togglePacked(cid, iid) {
+  const c = gcon(cid); if (!c) return;
+  const i = c.items.find(x => x.id === iid); if (!i) return;
+  i.packed = !i.packed;
+  const all = c.items.length > 0 && c.items.every(x => x.packed);
+  const any = c.items.some(x => x.packed);
+  c.packStatus = all ? 'packed' : any ? 'packing' : 'unpacked';
+  if (all) logAct(`${c.code} fully packed`);
   syncPush();
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CATALOG CRUD
-// ═══════════════════════════════════════════
-function addCatalogItem(name,cat){
-  const item={id:uid(),name,cat:cat||'misc'};
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function addCatalogItem(name, cat) {
+  const item = {id:uid(), name, cat:cat||'misc'};
   DB.catalog.push(item);
   syncPush();
   return item;
 }
-function dCatalogItem(id){
-  DB.catalog=DB.catalog.filter(x=>x.id!==id);
+function deleteCatalogItem(id) {
+  DB.catalog = DB.catalog.filter(x => x.id !== id);
   syncPush();
 }
 
-// ═══════════════════════════════════════════
-// TOAST / CONFIRM / MODAL
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// UI HELPERS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 let _tt;
-function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('on'),2200)}
-function showCf(title,msg,cb){document.getElementById('cf-t').textContent=title;document.getElementById('cf-m').textContent=msg;document.getElementById('cf-ok').onclick=()=>{hideCf();cb()};document.getElementById('cf').classList.add('on')}
-function hideCf(){document.getElementById('cf').classList.remove('on')}
-function showModal(title,html){document.getElementById('mt').textContent=title;document.getElementById('mbd').innerHTML=html;document.getElementById('mo').classList.add('on')}
-function hideModal(){document.getElementById('mo').classList.remove('on')}
-function moClick(e){if(e.target===document.getElementById('mo'))hideModal()}
+function toast(msg) { const e=document.getElementById('toast'); e.textContent=msg; e.classList.add('on'); clearTimeout(_tt); _tt=setTimeout(()=>e.classList.remove('on'),2200); }
+function showCf(title, msg, cb) { document.getElementById('cf-t').textContent=title; document.getElementById('cf-m').textContent=msg; document.getElementById('cf-ok').onclick=()=>{hideCf();cb();}; document.getElementById('cf').classList.add('on'); }
+function hideCf() { document.getElementById('cf').classList.remove('on'); }
+function showModal(title, html) { document.getElementById('mt').textContent=title; document.getElementById('mbd').innerHTML=html; document.getElementById('mo').classList.add('on'); }
+function hideModal() { document.getElementById('mo').classList.remove('on'); }
+function moClick(e) { if (e.target===document.getElementById('mo')) hideModal(); }
 
-// ═══════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════
-function nav(view,id){
-  APP.view=view;
-  if(view==='container-detail')APP.containerId=id;
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NAVIGATION & FAB
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function nav(view, id) {
+  APP.view = view;
+  if (view === 'container-detail') APP.containerId = id;
   render();
-  document.getElementById('view').scrollTop=0;
+  document.getElementById('view').scrollTop = 0;
 }
-function handleFab(){
-  if(APP.view==='containers')showCreateContainerModal();
-  else if(APP.view==='container-detail')showAddItemModal(APP.containerId);
-  else if(APP.view==='catalog')showAddCatalogModal();
+function handleFab() {
+  if (APP.view === 'containers') showCreateContainerModal();
+  else if (APP.view === 'container-detail') showAddItemModal(APP.containerId);
+  else if (APP.view === 'catalog') showAddCatalogModal();
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // PACK MODE
-// ═══════════════════════════════════════════
-function enterPack(containerId){
-  APP.packContainerId=containerId;
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function enterPack(cid) {
+  APP.packCid = cid;
   renderPackScreen();
   document.getElementById('pack-screen').classList.add('on');
 }
-function exitPack(){
+function exitPack() {
   document.getElementById('pack-screen').classList.remove('on');
-  APP.packContainerId=null;
+  APP.packCid = null;
   render();
 }
-function renderPackScreen(){
-  const c=gbox(APP.packContainerId);if(!c)return;
-  document.getElementById('pack-title').textContent=c.code+(c.name?' — '+c.name:'');
-  const packed=c.items.filter(i=>i.packed).length;
-  const total=c.items.length;
-  const pct=total?Math.round(packed/total*100):0;
-  document.getElementById('pack-prog-fill').style.width=pct+'%';
-  document.getElementById('pack-prog-txt').textContent=`${packed} / ${total} packed`;
-  document.getElementById('pack-prog-pct').textContent=pct+'%';
-  if(!c.items.length){
-    document.getElementById('pack-body').innerHTML='<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Add items to this container first.</p></div>';
+function renderPackScreen() {
+  const c = gcon(APP.packCid); if (!c) return;
+  const tc = CT[c.type]?.color || 'var(--acc)';
+  document.getElementById('pack-title').textContent = c.code + (c.name ? ' — ' + c.name : '');
+  document.getElementById('pack-pf').style.background = tc;
+  const packed = c.items.filter(i => i.packed).length;
+  const total = c.items.length;
+  const pct = total ? Math.round(packed/total*100) : 0;
+  document.getElementById('pack-pf').style.width = pct + '%';
+  document.getElementById('pack-pt-l').textContent = packed + ' / ' + total + ' packed';
+  document.getElementById('pack-pt-r').textContent = pct + '%';
+  if (!c.items.length) {
+    document.getElementById('pack-body').innerHTML = '<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Add items to this container first.</p></div>';
     return;
   }
-  document.getElementById('pack-body').innerHTML=c.items.map(i=>`
+  document.getElementById('pack-body').innerHTML = c.items.map(i => `
     <div class="irow">
-      <div class="pick${i.packed?' on':''}" style="${i.packed?'background:var(--acc);border-color:var(--acc)':''}" onclick="packToggle('${c.id}','${i.id}')">
+      <div class="pick${i.packed?' on':''}" style="${i.packed?`background:${tc};border-color:${tc}`:''}" onclick="packTog('${c.id}','${i.id}')">
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
       <div class="ib">
         <div class="in${i.packed?' x':''}" style="font-size:14px">${esc(i.name)}</div>
-        ${i.qty>1?`<div class="iqty">QTY: ${i.qty}</div>`:''}
-        ${i.notes?`<div class="inotes">${esc(i.notes)}</div>`:''}
+        ${i.qty > 1 ? `<div class="iqty">QTY: ${i.qty}</div>` : ''}
+        ${i.notes ? `<div class="inotes">${esc(i.notes)}</div>` : ''}
       </div>
     </div>`).join('');
 }
-function packToggle(cid,iid){
-  togglePacked(cid,iid);
-  renderPackScreen();
+function packTog(cid, iid) { togglePacked(cid, iid); renderPackScreen(); }
+function packReset() {
+  const c = gcon(APP.packCid); if (!c) return;
+  c.items.forEach(i => i.packed = false);
+  c.packStatus = 'unpacked';
+  syncPush(); renderPackScreen(); toast('Pack list reset');
 }
-function packReset(){
-  const c=gbox(APP.packContainerId);if(!c)return;
-  c.items.forEach(i=>i.packed=false);
-  c.packStatus='unpacked';
-  syncPush();
-  renderPackScreen();
-  toast('Pack list reset');
-}
-function packDone(){
-  const c=gbox(APP.packContainerId);if(!c)return;
-  const packed=c.items.filter(i=>i.packed).length;
-  const total=c.items.length;
-  if(packed<total){
-    showCf('Mark as Packed?',`${total-packed} item(s) not yet checked. Mark ${c.code} as packed anyway?`,()=>{
-      c.packStatus='packed';
-      c.items.forEach(i=>i.packed=true);
-      logActivity(`${c.code} packed (${total} items)`);
-      syncPush();
-      exitPack();
-      toast(`${c.code} marked as packed`);
-    });
-    document.getElementById('cf').classList.add('on');
-  } else {
-    c.packStatus='packed';
-    logActivity(`${c.code} packed (${total} items)`);
-    syncPush();
-    exitPack();
-    toast(`${c.code} packed!`);
-  }
+function packDone() {
+  const c = gcon(APP.packCid); if (!c) return;
+  const packed = c.items.filter(i => i.packed).length;
+  const total = c.items.length;
+  const finish = () => {
+    c.packStatus = 'packed';
+    c.items.forEach(i => i.packed = true);
+    logAct(`${c.code} packed (${total} items)`);
+    syncPush(); exitPack(); toast(c.code + ' packed! ✓');
+  };
+  if (packed < total) {
+    showCf('Mark as Packed?', `${total - packed} item(s) unchecked. Mark ${c.code} as fully packed anyway?`, finish);
+    document.getElementById('cf-ok').textContent = 'Mark Packed';
+  } else { finish(); }
 }
 
-// ═══════════════════════════════════════════
-// MODALS
-// ═══════════════════════════════════════════
-function showCreateContainerModal(){
-  _selType='sc';
-  const {code}=nextCode('sc');
-  showModal('NEW CONTAINER',`
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CONTAINER MODALS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showCreateContainerModal() {
+  _selType = 'sc';
+  showModal('NEW CONTAINER', `
     <div class="fg">
       <label class="fl">Container Type</label>
-      <div class="type-grid">
-        ${Object.entries(CT).map(([k,v])=>`<div class="type-opt${k==='sc'?' sel':''}" style="${k==='sc'?`border-color:${v.color}`:'color:var(--mut)'}" id="to-${k}" onclick="selType('${k}')">
-          <div class="type-opt-label" style="color:${v.color}">${v.label}</div>
-          <div class="type-opt-code" id="code-preview-${k}">${nextCode(k).code}</div>
-        </div>`).join('')}
+      <div class="type-grid" id="type-grid">
+        ${Object.entries(CT).map(([k,v]) => `
+          <div class="type-opt${k==='sc'?' sel':''}" id="to-${k}" style="${k==='sc'?'border-color:'+v.color:''}" onclick="selType('${k}')">
+            <div class="type-opt-label" style="color:${v.color}">${v.label}</div>
+            <div class="type-opt-code" id="toc-${k}">${nextCode(k).code}</div>
+          </div>`).join('')}
       </div>
     </div>
-    <div class="fg"><label class="fl">Custom Name (optional)</label><input class="fi" id="f-cn" placeholder="e.g. John's Main Kit" maxlength="60"></div>
+    <div class="fg"><label class="fl">Custom Name (optional)</label><input class="fi" id="f-cn" placeholder='e.g. Evan&apos;s Main Kit' maxlength="60"></div>
     <div class="fg"><label class="fl">Assigned To</label>
       <select class="fi" id="f-ca">
         <option value="">— Unassigned —</option>
-        ${DB.members.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('')}
+        ${DB.members.map(m => `<option value="${m.id}">${esc(m.name)}</option>`).join('')}
       </select>
     </div>
     <div class="fg"><label class="fl">Starting Location</label>
       <select class="fi" id="f-cl">
-        ${Object.entries(LOCS).map(([k,v])=>`<option value="${k}">${v.icon} ${v.label}</option>`).join('')}
+        ${Object.entries(LOCS).map(([k,v]) => `<option value="${k}">${v.icon} ${v.label}</option>`).join('')}
       </select>
     </div>
-    <button class="btn btn-p" onclick="subCreateContainer()">Create Container</button>`);
+    <button class="btn btn-p" onclick="submitCreateContainer()">Create Container</button>`);
 }
-function selType(t){
-  _selType=t;
-  Object.keys(CT).forEach(k=>{
-    const el=document.getElementById('to-'+k);
-    if(!el)return;
-    el.style.borderColor=k===t?CT[k].color:getComputedStyle(document.documentElement).getPropertyValue('--b');
-    el.className='type-opt'+(k===t?' sel':'');
+function selType(t) {
+  _selType = t;
+  Object.keys(CT).forEach(k => {
+    const el = document.getElementById('to-' + k);
+    if (!el) return;
+    el.className = 'type-opt' + (k === t ? ' sel' : '');
+    el.style.borderColor = k === t ? CT[k].color : '';
   });
 }
-function subCreateContainer(){
-  const name=(document.getElementById('f-cn')?.value||'').trim();
-  const assignedTo=document.getElementById('f-ca')?.value||null;
-  const location=document.getElementById('f-cl')?.value||'studio';
-  cContainer(_selType,name,assignedTo,location);
-  hideModal();toast('Container created');nav('containers');
+function submitCreateContainer() {
+  const name = (document.getElementById('f-cn')?.value||'').trim();
+  const mem = document.getElementById('f-ca')?.value || null;
+  const loc = document.getElementById('f-cl')?.value || 'studio';
+  createContainer(_selType, name, mem, loc);
+  hideModal(); toast('Container created'); nav('containers');
 }
 
-function showEditContainerModal(id){
-  const c=gbox(id);if(!c)return;
-  showModal('EDIT CONTAINER',`
-    <div style="margin-bottom:12px"><span class="badge badge-${c.type}" style="font-size:11px">${c.code}</span></div>
+function showEditContainerModal(id) {
+  const c = gcon(id); if (!c) return;
+  const tc = CT[c.type]?.color || 'var(--acc)';
+  showModal('EDIT CONTAINER', `
+    <div style="margin-bottom:12px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:16px;font-weight:700;color:${tc}">${esc(c.code)}</span>
+      <span class="badge badge-${c.type}">${CT[c.type]?.label}</span>
+    </div>
     <div class="fg"><label class="fl">Custom Name</label><input class="fi" id="f-cn" value="${esc(c.name)}" maxlength="60"></div>
     <div class="fg"><label class="fl">Assigned To</label>
       <select class="fi" id="f-ca">
         <option value="">— Unassigned —</option>
-        ${DB.members.map(m=>`<option value="${m.id}"${c.assignedTo===m.id?' selected':''}>${esc(m.name)}</option>`).join('')}
+        ${DB.members.map(m => `<option value="${m.id}"${c.assignedTo===m.id?' selected':''}>${esc(m.name)}</option>`).join('')}
       </select>
     </div>
-    <button class="btn btn-p" onclick="subEditContainer('${id}')">Save Changes</button>
-    <button class="btn btn-d" onclick="confirmDeleteContainer('${id}')">Delete Container</button>`);
+    <button class="btn btn-p" onclick="submitEditContainer('${id}')">Save Changes</button>
+    <button class="btn btn-d" onclick="confirmDelContainer('${id}')">Delete Container</button>`);
 }
-function subEditContainer(id){
-  const name=(document.getElementById('f-cn')?.value||'').trim();
-  const assignedTo=document.getElementById('f-ca')?.value||null;
-  const c=gbox(id);
-  uContainer(id,name,assignedTo,c?.location||'studio');
-  hideModal();toast('Container updated');render();
+function submitEditContainer(id) {
+  const c = gcon(id);
+  const name = (document.getElementById('f-cn')?.value||'').trim();
+  const mem = document.getElementById('f-ca')?.value || null;
+  updateContainer(id, name, mem, c?.location||'studio');
+  hideModal(); toast('Saved'); render();
 }
-function confirmDeleteContainer(id){
-  const c=gbox(id);
+function confirmDelContainer(id) {
+  const c = gcon(id);
   hideModal();
-  showCf('Delete Container',`Delete ${c?.code}${c?.name?' "'+c.name+'"':''}? All items inside will be removed.`,()=>{
-    dContainer(id);toast('Container deleted');nav('containers');
+  showCf('Delete Container', `Delete ${c?.code}${c?.name?' "'+c.name+'"':''}? This removes all items inside.`, () => {
+    deleteContainer(id); toast('Deleted'); nav('containers');
   });
 }
 
-// Add item modal
-function showAddItemModal(containerId){
-  _addItemCatId=null;_addItemQty=1;
-  const cats=Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
-  showModal('ADD ITEM',`
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ITEM MODALS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showAddItemModal(cid) {
+  _addCatId = null; _addQty = 1;
+  showModal('ADD ITEM', `
     <div class="fg">
       <label class="fl">Search Catalog</label>
-      <input class="fi" id="f-ais" placeholder="Type to search items…" oninput="filterCatalogItems()" autocomplete="off">
-      <div class="cat-list" id="cat-item-list">${renderCatalogItemList('')}</div>
-      <div id="selected-item-label" style="font-size:11px;color:var(--acc);margin-top:6px;min-height:16px"></div>
+      <input class="fi" id="f-ais" placeholder="Type to search…" oninput="filterCatList()" autocomplete="off">
+      <div class="cat-list" id="cat-list">${buildCatList('')}</div>
+      <div id="sel-lbl" style="font-size:11px;color:var(--acc);margin-top:6px;min-height:16px"></div>
     </div>
     <div id="new-item-form" style="display:none">
-      <div class="fg"><label class="fl">Or Create New Item</label><input class="fi" id="f-nin" placeholder="Item name" maxlength="80"></div>
-      <div class="fg"><label class="fl">Category</label><select class="fi" id="f-ncat">${cats}</select></div>
+      <div class="fg"><label class="fl">Or Create New Item</label><input class="fi" id="f-ni" placeholder="Item name" maxlength="80"></div>
+      <div class="fg"><label class="fl">Category</label><select class="fi" id="f-nc">${Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div>
     </div>
     <div class="fg"><label class="fl">Quantity</label>
       <div class="qty-row">
         <button class="qty-btn" onclick="adjQty(-1)">−</button>
-        <input class="qty-val" id="f-qty" type="number" min="1" value="1" oninput="_addItemQty=parseInt(this.value)||1">
+        <input class="qty-val" id="f-qty" type="number" min="1" value="1" oninput="_addQty=Math.max(1,parseInt(this.value)||1)">
         <button class="qty-btn" onclick="adjQty(1)">+</button>
       </div>
     </div>
-    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-inotes" placeholder="e.g. 3m, black tape"></textarea></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn btn-g btn-sm" onclick="toggleNewItemForm()">+ New Item</button>
-    </div>
-    <button class="btn btn-p" style="margin-top:10px" onclick="subAddItem('${containerId}')">Add to Container</button>`);
-  setTimeout(()=>document.getElementById('f-ais')?.focus(),80);
+    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-notes" placeholder="e.g. 3m, blue tape, Gain 6"></textarea></div>
+    <button class="btn btn-g btn-sm" onclick="toggleNewItemForm()" style="margin-bottom:8px">+ Create new catalog item</button>
+    <button class="btn btn-p" onclick="submitAddItem('${cid}')">Add to Container</button>`);
+  setTimeout(() => document.getElementById('f-ais')?.focus(), 80);
 }
-function renderCatalogItemList(q){
-  const all=DB.catalog.filter(c=>!q||c.name.toLowerCase().includes(q.toLowerCase())).slice(0,30);
-  if(!all.length)return`<div style="padding:12px;text-align:center;font-size:11px;color:var(--mut)">No matches. Use "+ New Item" to add.</div>`;
-  return all.map(c=>`<div class="cat-item${_addItemCatId===c.id?' sel-item':''}" onclick="selectCatItem('${c.id}','${esc(c.name)}')">
-    <div class="cat-item-n">${esc(c.name)}</div>
-    <div class="cat-item-c cat-${c.cat}">${CATS[c.cat]?.label||c.cat}</div>
-  </div>`).join('');
+function buildCatList(q) {
+  const sorted = [...DB.catalog].sort((a,b) => a.name.localeCompare(b.name));
+  const list = q ? sorted.filter(c => c.name.toLowerCase().includes(q.toLowerCase())) : sorted;
+  if (!list.length) return `<div style="padding:12px;text-align:center;font-size:11px;color:var(--mut)">No matches — use "Create new" below.</div>`;
+  return list.slice(0, 40).map(c => `
+    <div class="cat-item${_addCatId===c.id?' sel':''}" data-id="${c.id}" onclick="selectCatItem('${c.id}','${esc(c.name).replace(/'/g,"\\'")}')">
+      <div class="cat-item-n">${esc(c.name)}</div>
+      <div class="cat-item-c cat-${c.cat}">${CATS[c.cat]?.label||c.cat}</div>
+    </div>`).join('');
 }
-function filterCatalogItems(){
-  const q=document.getElementById('f-ais')?.value||'';
-  const el=document.getElementById('cat-item-list');
-  if(el)el.innerHTML=renderCatalogItemList(q);
+function filterCatList() {
+  const q = document.getElementById('f-ais')?.value || '';
+  const el = document.getElementById('cat-list');
+  if (el) el.innerHTML = buildCatList(q);
 }
-function selectCatItem(id,name){
-  _addItemCatId=id;
-  document.querySelectorAll('.cat-item').forEach(el=>el.classList.remove('sel-item'));
-  document.querySelectorAll('.cat-item').forEach(el=>{if(el.onclick?.toString().includes(id))el.classList.add('sel-item')});
-  const lbl=document.getElementById('selected-item-label');
-  if(lbl)lbl.textContent='Selected: '+name;
-  document.getElementById('new-item-form').style.display='none';
+function selectCatItem(id, name) {
+  _addCatId = id;
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('sel', el.dataset.id === id));
+  const lbl = document.getElementById('sel-lbl');
+  if (lbl) lbl.textContent = '✓ Selected: ' + name;
+  document.getElementById('new-item-form').style.display = 'none';
 }
-function toggleNewItemForm(){
-  const f=document.getElementById('new-item-form');
-  if(f)f.style.display=f.style.display==='none'?'block':'none';
-  _addItemCatId=null;
-  const lbl=document.getElementById('selected-item-label');
-  if(lbl)lbl.textContent='';
+function toggleNewItemForm() {
+  const f = document.getElementById('new-item-form');
+  if (f) f.style.display = f.style.display === 'none' ? 'block' : 'none';
+  _addCatId = null;
+  const lbl = document.getElementById('sel-lbl');
+  if (lbl) lbl.textContent = '';
+  document.querySelectorAll('.cat-item').forEach(el => el.classList.remove('sel'));
 }
-function adjQty(d){
-  _addItemQty=Math.max(1,(_addItemQty||1)+d);
-  const el=document.getElementById('f-qty');
-  if(el)el.value=_addItemQty;
+function adjQty(d) {
+  _addQty = Math.max(1, (_addQty||1) + d);
+  const el = document.getElementById('f-qty');
+  if (el) el.value = _addQty;
 }
-function subAddItem(containerId){
-  let name='';let catId=_addItemCatId;
-  const newForm=document.getElementById('new-item-form');
-  if(newForm&&newForm.style.display!=='none'){
-    name=(document.getElementById('f-nin')?.value||'').trim();
-    if(!name){toast('Item name required');return;}
-    const cat=document.getElementById('f-ncat')?.value||'misc';
-    const ci=addCatalogItem(name,cat);
-    catId=ci.id;
+function submitAddItem(cid) {
+  let name = '', catId = _addCatId;
+  const nf = document.getElementById('new-item-form');
+  if (nf && nf.style.display !== 'none') {
+    name = (document.getElementById('f-ni')?.value||'').trim();
+    if (!name) { toast('Item name required'); return; }
+    const ci = addCatalogItem(name, document.getElementById('f-nc')?.value||'misc');
+    catId = ci.id;
   } else {
-    if(!catId){toast('Select an item from the catalog');return;}
-    const ci=DB.catalog.find(c=>c.id===catId);
-    name=ci?.name||'';
+    if (!catId) { toast('Select an item from the catalog'); return; }
+    name = DB.catalog.find(c => c.id === catId)?.name || '';
   }
-  const notes=(document.getElementById('f-inotes')?.value||'').trim();
-  addItem(containerId,catId,name,_addItemQty,notes);
-  hideModal();toast('Item added');render();
+  const notes = (document.getElementById('f-notes')?.value||'').trim();
+  addItem(cid, catId, name, _addQty, notes);
+  hideModal(); toast('Item added'); render();
 }
 
-function showEditItemModal(containerId,itemId){
-  const c=gbox(containerId);const i=c?.items.find(x=>x.id===itemId);if(!i)return;
-  showModal('EDIT ITEM',`
+function showEditItemModal(cid, iid) {
+  const c = gcon(cid); const i = c?.items.find(x => x.id === iid); if (!i) return;
+  _addQty = i.qty || 1;
+  showModal('EDIT ITEM', `
     <div class="fg"><label class="fl">Name</label><input class="fi" id="f-in" value="${esc(i.name)}" maxlength="80"></div>
     <div class="fg"><label class="fl">Quantity</label>
       <div class="qty-row">
         <button class="qty-btn" onclick="adjQty(-1)">−</button>
-        <input class="qty-val" id="f-qty" type="number" min="1" value="${i.qty||1}" oninput="_addItemQty=parseInt(this.value)||1">
+        <input class="qty-val" id="f-qty" type="number" min="1" value="${i.qty||1}" oninput="_addQty=Math.max(1,parseInt(this.value)||1)">
         <button class="qty-btn" onclick="adjQty(1)">+</button>
       </div>
     </div>
-    <div class="fg"><label class="fl">Notes</label><textarea class="fi" id="f-inotes">${esc(i.notes)}</textarea></div>
-    <button class="btn btn-p" onclick="subEditItem('${containerId}','${itemId}')">Save Changes</button>`);
-  _addItemQty=i.qty||1;
+    <div class="fg"><label class="fl">Notes</label><textarea class="fi" id="f-notes">${esc(i.notes)}</textarea></div>
+    <button class="btn btn-p" onclick="submitEditItem('${cid}','${iid}')">Save Changes</button>`);
 }
-function subEditItem(cid,iid){
-  const name=(document.getElementById('f-in')?.value||'').trim();
-  if(!name){toast('Name required');return;}
-  const notes=(document.getElementById('f-inotes')?.value||'').trim();
-  uItem(cid,iid,name,_addItemQty,notes);
-  hideModal();toast('Item updated');render();
+function submitEditItem(cid, iid) {
+  const name = (document.getElementById('f-in')?.value||'').trim();
+  if (!name) { toast('Name required'); return; }
+  updateItem(cid, iid, name, _addQty, (document.getElementById('f-notes')?.value||'').trim());
+  hideModal(); toast('Updated'); render();
 }
-
-function showAddCatalogModal(){
-  const cats=Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
-  showModal('NEW CATALOG ITEM',`
-    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-cin" placeholder="e.g. SM57 Dynamic Mic" maxlength="80" autofocus></div>
-    <div class="fg"><label class="fl">Category</label><select class="fi" id="f-ccat">${cats}</select></div>
-    <button class="btn btn-p" onclick="subAddCatalog()">Add to Catalog</button>`);
-  setTimeout(()=>document.getElementById('f-cin')?.focus(),80);
-}
-function subAddCatalog(){
-  const name=(document.getElementById('f-cin')?.value||'').trim();
-  if(!name){toast('Name required');return;}
-  const cat=document.getElementById('f-ccat')?.value||'misc';
-  addCatalogItem(name,cat);
-  hideModal();toast('Added to catalog');render();
+function confirmDelItem(cid, iid) {
+  const c = gcon(cid); const i = c?.items.find(x => x.id === iid);
+  showCf('Delete Item', `Remove "${i?.name}" from ${c?.code}?`, () => { deleteItem(cid, iid); toast('Removed'); render(); });
 }
 
-// Settings modal
-function showSettings(){
-  const mcolors=MCOLORS.map(c=>`<div class="csw${DB.members[0]?.color===c?' sel':''}" style="background:${c}" data-c="${c}"></div>`).join('');
-  showModal('SETTINGS',`
-    <div class="fg"><label class="fl">Band / Studio Name</label><input class="fi" id="s-band" value="${esc(DB.bandName)}" maxlength="40"></div>
-    <div class="setup-divider"></div>
-    <div class="lbl" style="padding:0 0 8px">Members</div>
-    ${DB.members.map((m,i)=>`
-      <div class="fg" style="display:flex;gap:8px;align-items:center">
-        <div style="width:14px;height:14px;border-radius:50%;background:${m.color};flex-shrink:0"></div>
-        <input class="fi" id="s-m${i+1}" value="${esc(m.name)}" maxlength="30" placeholder="Member ${i+1}" style="flex:1">
-        <select class="fi" id="s-mc${i+1}" style="width:80px">
-          ${MCOLORS.map(c=>`<option value="${c}"${m.color===c?' selected':''}>${c}</option>`).join('')}
-        </select>
-      </div>`).join('')}
-    <div class="setup-divider"></div>
-    <div class="fg"><label class="fl">Firebase Database URL</label>
-      <input class="fi" id="s-fb" value="${esc(APP.dbUrl||'')}" placeholder="https://project-rtdb.firebaseio.com"></div>
-    <button class="btn btn-p" onclick="subSettings()">Save Settings</button>
-    <button class="btn btn-d" style="margin-top:8px" onclick="showCf('Clear All Data','This will wipe all containers and catalog data. Cannot be undone.',()=>{clearAll()})">Clear All Data</button>`);
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CATALOG MODALS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showAddCatalogModal() {
+  showModal('NEW CATALOG ITEM', `
+    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-cin" placeholder="e.g. Boss BD-2 Blues Driver" maxlength="80"></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi" id="f-ccat">${Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('')}</select></div>
+    <button class="btn btn-p" onclick="submitAddCatalog()">Add to Catalog</button>`);
+  setTimeout(() => document.getElementById('f-cin')?.focus(), 80);
 }
-async function subSettings(){
-  DB.bandName=(document.getElementById('s-band')?.value||'The Studio').trim();
-  DB.members.forEach((m,i)=>{
-    m.name=(document.getElementById(`s-m${i+1}`)?.value||`Member ${i+1}`).trim();
-    m.color=document.getElementById(`s-mc${i+1}`)?.value||m.color;
-  });
-  const fbUrl=(document.getElementById('s-fb')?.value||'').trim();
-  if(fbUrl&&fbUrl!==APP.dbUrl){
-    const ok=await connectFirebase(fbUrl);
-    if(!ok){toast('Could not connect to Firebase — check the URL');return;}
-    toast('Firebase connected!');
-  }
-  syncPush();
-  hideModal();toast('Settings saved');render();
+function submitAddCatalog() {
+  const name = (document.getElementById('f-cin')?.value||'').trim();
+  if (!name) { toast('Name required'); return; }
+  addCatalogItem(name, document.getElementById('f-ccat')?.value||'misc');
+  hideModal(); toast('Added to catalog'); render();
 }
-function clearAll(){
-  DB.containers=[];DB.catalog=[];DB.activity=[];DB._v=0;
-  if(DB.catalog.length===0)DB.catalog=[...SEED];
-  saveLocal();syncPush();render();toast('Data cleared');
+function confirmDelCatalog(id) {
+  const item = DB.catalog.find(x => x.id === id);
+  showCf('Remove from Catalog', `Remove "${item?.name}"? Items already in containers are not affected.`, () => { deleteCatalogItem(id); toast('Removed'); render(); });
 }
 
-// ═══════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════
-function render(){
-  // Nav highlight
-  document.querySelectorAll('.nb').forEach(b=>{
-    const t=b.dataset.tab;
-    b.classList.toggle('on',t===APP.view||(t==='containers'&&APP.view==='container-detail'));
-  });
-  // FAB
-  const fab=document.getElementById('fab');
-  const showFab=['containers','container-detail','catalog'].includes(APP.view);
-  fab.classList.toggle('hide',!showFab);
-
-  const el=document.getElementById('view');
-  if(APP.view==='setup')el.innerHTML=vSetup();
-  else if(APP.view==='home')el.innerHTML=vHome();
-  else if(APP.view==='containers')el.innerHTML=vContainers();
-  else if(APP.view==='container-detail')el.innerHTML=vContainerDetail();
-  else if(APP.view==='catalog')el.innerHTML=vCatalog();
-  else if(APP.view==='search'){el.innerHTML=vSearch();wireSearch();}
-
-  if(APP.view==='setup')return;
-  setSyncStatus(APP.syncStatus);
-}
-
-// ═══════════════════════════════════════════
-// SETUP VIEW
-// ═══════════════════════════════════════════
-function vSetup(){
-  document.getElementById('bnav').style.display='none';
-  document.getElementById('fab').style.display='none';
-  document.getElementById('sync').style.display='none';
-  return`<div class="setup-screen">
-    <div class="setup-logo">STUDIO INVENTORY</div>
-    <div class="setup-sub">Connect your cloud database to share data across all band members.</div>
-
-    <div class="lbl" style="padding:0 0 10px">Connect Firebase (free)</div>
-    <div class="setup-step"><div class="setup-step-n">1</div><div class="setup-step-t">Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> and sign in with Google.</div></div>
-    <div class="setup-step"><div class="setup-step-n">2</div><div class="setup-step-t">Click <strong>Add project</strong> → give it any name → Create project.</div></div>
-    <div class="setup-step"><div class="setup-step-n">3</div><div class="setup-step-t">In the left menu click <strong>Build → Realtime Database → Create database → Start in test mode</strong>.</div></div>
-    <div class="setup-step"><div class="setup-step-n">4</div><div class="setup-step-t">Copy the URL shown (looks like <em>https://your-project-default-rtdb.firebaseio.com</em>).</div></div>
-    <div class="setup-step"><div class="setup-step-n">5</div><div class="setup-step-t">Paste it below and tap Connect.</div></div>
-
-    <div class="setup-divider"></div>
-    <div class="fg"><input class="fi" id="setup-fb-url" placeholder="https://your-project-default-rtdb.firebaseio.com" style="font-size:12px"></div>
-    <button class="btn btn-p" onclick="setupConnect()">Connect Database</button>
-    <button class="btn btn-g" onclick="setupSkip()" style="margin-top:8px">Skip — use this device only</button>
-  </div>`;
-}
-async function setupConnect(){
-  const url=(document.getElementById('setup-fb-url')?.value||'').trim();
-  if(!url){toast('Paste your Firebase Database URL');return;}
-  const btn=document.querySelector('#view .btn-p');
-  if(btn){btn.textContent='Connecting…';btn.disabled=true;}
-  const ok=await connectFirebase(url);
-  if(!ok){toast('Connection failed — check the URL and try again');if(btn){btn.textContent='Connect Database';btn.disabled=false;}return;}
-  finishSetup();
-}
-function setupSkip(){finishSetup();}
-function finishSetup(){
-  // Seed catalog if empty
-  if(!DB.catalog.length){DB.catalog=[...SEED];syncPush();}
-  localStorage.setItem('studio-ready','1');
-  APP.view='home';
-  document.getElementById('bnav').style.display='flex';
-  document.getElementById('fab').style.display='flex';
-  document.getElementById('sync').style.display='';
-  render();
-  toast('Welcome to Studio Inventory!');
-}
-
-// ═══════════════════════════════════════════
-// HOME VIEW
-// ═══════════════════════════════════════════
-function vHome(){
-  const mem=gmem(APP.currentMember);
-  const locCounts={studio:0,gig:0,transit:0};
-  DB.containers.forEach(c=>locCounts[c.location]=(locCounts[c.location]||0)+1);
-  const totalItems=DB.containers.reduce((a,c)=>a+c.items.length,0);
-  const packed=DB.containers.filter(c=>c.packStatus==='packed').length;
-
-  return`
-    <div class="ph">
-      <div class="ph-l">
-        <div class="pt" style="margin:0">${esc(DB.bandName)}</div>
-        <div class="ps">Studio Inventory</div>
-      </div>
-      <div class="ph-r">
-        <button class="icon-btn" style="width:34px;height:34px;border:1px solid var(--b);border-radius:8px;background:var(--s)" onclick="showSettings()">⚙️</button>
-      </div>
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SETTINGS MODAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showSettings() {
+  showModal('SETTINGS', `
+    <div class="set-sec">
+      <div class="fg"><label class="fl">Band Name</label><input class="fi" id="s-band" value="${esc(DB.bandName)}" maxlength="40"></div>
     </div>
+    <div class="set-sec">
+      <div class="lbl" style="padding:0 0 10px">Members</div>
+      ${DB.members.map((m,i) => `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <div style="width:12px;height:12px;border-radius:50%;background:${m.color};flex-shrink:0"></div>
+          <input class="fi" id="s-mn${i}" value="${esc(m.name)}" maxlength="30" style="flex:2">
+          <input class="fi" id="s-mr${i}" value="${esc(m.role)}" maxlength="50" placeholder="Role" style="flex:3;font-size:11px">
+          <select class="fi" id="s-mc${i}" style="width:56px;padding:9px 6px;font-size:10px">
+            ${MCOLORS.map(c => `<option value="${c}"${m.color===c?' selected':''}>${c}</option>`).join('')}
+          </select>
+        </div>`).join('')}
+      <button class="btn btn-g btn-sm" onclick="addMember()">+ Add Member</button>
+    </div>
+    <div class="set-sec">
+      <div class="lbl" style="padding:0 0 8px">Cloud Database (Firebase)</div>
+      <div class="fg"><label class="fl">Database URL</label>
+        <input class="fi" id="s-fb" value="${esc(APP.dbUrl||'')}" placeholder="https://project-rtdb.firebaseio.com" style="font-size:12px"></div>
+      <button class="btn btn-g" onclick="saveAndConnectFb()" style="margin-bottom:4px">${APP.dbUrl ? 'Update Connection' : 'Connect Firebase'}</button>
+      <div style="font-size:10px;color:var(--mut);margin-top:4px">Free forever · Syncs all band members · Setup takes 3 min at console.firebase.google.com</div>
+    </div>
+    <button class="btn btn-p" onclick="saveSettings()">Save Settings</button>
+    <button class="btn btn-d" style="margin-top:6px" onclick="confirmClearAll()">Clear All Data</button>`);
+}
+function saveSettings() {
+  DB.bandName = (document.getElementById('s-band')?.value||'ToonDoof').trim();
+  DB.members.forEach((m,i) => {
+    m.name = (document.getElementById(`s-mn${i}`)?.value||m.name).trim();
+    m.role = (document.getElementById(`s-mr${i}`)?.value||'').trim();
+    m.color = document.getElementById(`s-mc${i}`)?.value || m.color;
+  });
+  syncPush(); hideModal(); toast('Settings saved'); render();
+}
+async function saveAndConnectFb() {
+  const url = (document.getElementById('s-fb')?.value||'').trim();
+  if (!url) { toast('Enter a Firebase URL'); return; }
+  const btn = document.querySelector('#mbd .btn-g');
+  if (btn) { btn.textContent = 'Connecting…'; btn.disabled = true; }
+  // Also save member settings first
+  DB.bandName = (document.getElementById('s-band')?.value||'ToonDoof').trim();
+  DB.members.forEach((m,i) => {
+    m.name = (document.getElementById(`s-mn${i}`)?.value||m.name).trim();
+    m.role = (document.getElementById(`s-mr${i}`)?.value||'').trim();
+    m.color = document.getElementById(`s-mc${i}`)?.value || m.color;
+  });
+  const ok = await connectFirebase(url);
+  if (!ok) { toast('Connection failed — check URL'); if (btn) { btn.textContent='Connect Firebase'; btn.disabled=false; } return; }
+  hideModal(); toast('Firebase connected! Data now syncs across all band members.'); render();
+}
+function addMember() {
+  DB.members.push({id:'m'+uid(), name:'New Member', role:'', color:MCOLORS[DB.members.length % MCOLORS.length]});
+  showSettings();
+}
+function confirmClearAll() {
+  showCf('Clear All Data', 'This will wipe all containers, items, and activity. Cannot be undone.', () => {
+    DB.containers = []; DB.activity = []; DB._v = 0;
+    saveLocal(); syncPush(); hideModal(); render(); toast('Data cleared');
+  });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// RENDER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function render() {
+  document.querySelectorAll('.nb').forEach(b => {
+    const t = b.dataset.tab;
+    b.classList.toggle('on', t===APP.view || (t==='containers'&&APP.view==='container-detail'));
+  });
+  const fab = document.getElementById('fab');
+  fab.classList.toggle('hide', !['containers','container-detail','catalog'].includes(APP.view));
+
+  const el = document.getElementById('view');
+  if (APP.view==='home') el.innerHTML = vHome();
+  else if (APP.view==='containers') el.innerHTML = vContainers();
+  else if (APP.view==='container-detail') el.innerHTML = vContainerDetail();
+  else if (APP.view==='catalog') el.innerHTML = vCatalog();
+  else if (APP.view==='search') { el.innerHTML = vSearch(); wireSearch(); }
+  setSyncUI(APP.syncStatus);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// HOME VIEW
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function vHome() {
+  const lc = {studio:0, gig:0, transit:0};
+  DB.containers.forEach(c => lc[c.location] = (lc[c.location]||0) + 1);
+  const totalItems = DB.containers.reduce((a,c) => a + c.items.length, 0);
+  const packed = DB.containers.filter(c => c.packStatus==='packed').length;
+
+  return `
+    <div class="ph">
+      <div>
+        <div class="ph-title">${esc(DB.bandName)}</div>
+        <div class="ph-sub">Studio Inventory</div>
+      </div>
+      <button class="ib2" style="width:34px;height:34px;border:1px solid var(--b);border-radius:8px;background:var(--s);font-size:16px;margin-top:2px" onclick="showSettings()">⚙️</button>
+    </div>
+
+    ${!APP.dbUrl ? `<div class="fb-banner" onclick="showSettings()">
+      <span style="font-size:16px">☁️</span>
+      <div style="flex:1"><div style="font-size:11px;font-weight:700;color:var(--acc)">Not synced to cloud</div><div style="font-size:10px;color:var(--mut)">Tap to connect Firebase — free, shares data with all band members</div></div>
+      <span style="color:var(--acc);font-size:14px">→</span>
+    </div>` : ''}
 
     <div class="lbl">Who Are You?</div>
     <div class="members">
-      ${DB.members.map(m=>`<div class="mchip${APP.currentMember===m.id?' on':''}" style="${APP.currentMember===m.id?`border-color:${m.color}`:''}" onclick="setMember('${m.id}')">
+      ${DB.members.map(m => `<div class="mchip${APP.currentMember===m.id?' on':''}" style="${APP.currentMember===m.id?'border-color:'+m.color:''}" onclick="setMember('${m.id}')">
         <div class="mchip-n">${esc(m.name)}</div>
+        <div class="mchip-role">${esc(m.role)}</div>
         <div class="mchip-dot" style="background:${APP.currentMember===m.id?m.color:'var(--b2)'}"></div>
       </div>`).join('')}
     </div>
@@ -1011,243 +1005,228 @@ function vHome(){
       <div class="stat"><div class="sn">${packed}</div><div class="sl">Packed</div></div>
     </div>
 
-    <div class="lbl">Location Summary</div>
-    <div style="display:flex;gap:8px;padding:0 16px 12px">
-      <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="APP.filterLoc='studio';nav('containers')">
-        <div style="font-size:22px;margin-bottom:4px">🏠</div>
-        <div style="font-size:18px;font-weight:700;color:var(--acc)">${locCounts.studio||0}</div>
-        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">Studio</div>
-      </div>
-      <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="APP.filterLoc='gig';nav('containers')">
-        <div style="font-size:22px;margin-bottom:4px">🎤</div>
-        <div style="font-size:18px;font-weight:700;color:var(--acc)">${locCounts.gig||0}</div>
-        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">At Gig</div>
-      </div>
-      <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="APP.filterLoc='transit';nav('containers')">
-        <div style="font-size:22px;margin-bottom:4px">🚐</div>
-        <div style="font-size:18px;font-weight:700;color:var(--acc)">${locCounts.transit||0}</div>
-        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">Transit</div>
-      </div>
+    <div class="lbl">Locations</div>
+    <div style="display:flex;gap:8px;padding:0 14px 10px">
+      ${[['studio','🏠','Studio'],['gig','🎤','At Gig'],['transit','🚐','Transit']].map(([k,ico,lbl]) => `
+        <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px 6px;text-align:center;cursor:pointer" onclick="APP.filterLoc='${k}';nav('containers')">
+          <div style="font-size:20px;margin-bottom:4px">${ico}</div>
+          <div style="font-size:20px;font-weight:700;color:var(--acc)">${lc[k]||0}</div>
+          <div style="font-size:8px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">${lbl}</div>
+        </div>`).join('')}
     </div>
 
-    ${DB.activity.length?`<div class="lbl">Recent Activity</div>
-    ${DB.activity.slice(0,8).map(a=>{
-      const m=gmem(a.memberId);
-      return`<div class="act-row">
-        <div class="act-dot" style="background:${m?.color||'var(--mut)'}"></div>
-        <div class="act-t">${esc(a.text)}</div>
-        <div class="act-time">${timeAgo(a.time)}</div>
-      </div>`;
-    }).join('')}`:''}
+    ${DB.activity.length ? `<div class="lbl">Activity</div>
+      <div style="border-top:1px solid var(--b)">
+        ${DB.activity.slice(0,8).map(a => {
+          const m = gmem(a.memberId);
+          return `<div class="act-row">
+            <div class="act-dot" style="background:${m?.color||'var(--mut)'}"></div>
+            <div class="act-t">${esc(a.text)}</div>
+            <div class="act-time">${timeAgo(a.time)}</div>
+          </div>`;
+        }).join('')}
+      </div>` : `<div class="empty" style="padding-top:24px"><div class="ico">📦</div><h3>Ready to go</h3><p>Create containers and add your gear.<br>Tap + on the Containers tab to start.</p></div>`}
   `;
 }
-function setMember(id){
-  APP.currentMember=id;
-  localStorage.setItem('studio-member',id);
-  render();toast(`Signed in as ${gmem(id)?.name||id}`);
+function setMember(id) {
+  APP.currentMember = id;
+  localStorage.setItem('td-member', id);
+  render(); toast('Signed in as ' + gmem(id)?.name);
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONTAINERS VIEW
-// ═══════════════════════════════════════════
-function vContainers(){
-  let list=DB.containers;
-  if(APP.filterType!=='all')list=list.filter(c=>c.type===APP.filterType);
-  if(APP.filterLoc!=='all')list=list.filter(c=>c.location===APP.filterLoc);
-  list=[...list].sort((a,b)=>a.number-b.number);
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function vContainers() {
+  let list = [...DB.containers];
+  if (APP.filterType !== 'all') list = list.filter(c => c.type === APP.filterType);
+  if (APP.filterLoc !== 'all') list = list.filter(c => c.location === APP.filterLoc);
+  list.sort((a,b) => a.number - b.number);
 
-  return`
-    <div class="ph"><div class="ph-l"><div class="pt" style="margin:0">Containers</div><div class="ps">${DB.containers.length} total</div></div></div>
+  return `
+    <div class="ph">
+      <div><div class="ph-title">Containers</div><div class="ph-sub">${DB.containers.length} total</div></div>
+    </div>
     <div class="pills">
-      ${[['all','All'],['sc','Silver Cases'],['bc','Black Crates'],['cb','Clear Boxes']].map(([k,l])=>`<button class="pill${APP.filterType===k?' on':''}" onclick="APP.filterType='${k}';render()">${l}</button>`).join('')}
+      ${[['all','All'],['sc','Silver Cases'],['bc','Black Crates'],['cb','Clear Boxes']].map(([k,l]) =>
+        `<button class="pill${APP.filterType===k?' on':''}" onclick="APP.filterType='${k}';render()">${l}</button>`).join('')}
     </div>
-    <div class="pills" style="padding-top:0;gap:6px">
-      ${[['all','All Locations'],['studio','🏠 Studio'],['gig','🎤 Gig'],['transit','🚐 Transit']].map(([k,l])=>`<button class="pill${APP.filterLoc===k?' on':''}" onclick="APP.filterLoc='${k}';render()" style="font-size:9px">${l}</button>`).join('')}
+    <div class="pills" style="padding-top:2px">
+      ${[['all','All Locations'],['studio','🏠 Studio'],['gig','🎤 Gig'],['transit','🚐 Transit']].map(([k,l]) =>
+        `<button class="pill${APP.filterLoc===k?' on':''}" onclick="APP.filterLoc='${k}';render()" style="font-size:9px">${l}</button>`).join('')}
     </div>
-    ${!list.length?`<div class="empty"><div class="ico">📦</div><h3>No containers</h3><p>Tap + to create your first container.</p></div>`:
-    list.map(c=>{
-      const mem=gmem(c.assignedTo);
-      const packed=c.items.filter(i=>i.packed).length;
-      const total=c.items.length;
-      const tc=CT[c.type]?.color||'var(--acc)';
-      return`<div class="card bl" style="border-left-color:${tc}" onclick="nav('container-detail','${c.id}')">
+    ${!list.length ? `<div class="empty"><div class="ico">📦</div><h3>No containers</h3><p>Tap + to create your first container.</p></div>` :
+    list.map(c => {
+      const mem = gmem(c.assignedTo);
+      const packed = c.items.filter(i => i.packed).length;
+      const total = c.items.length;
+      const pct = total ? Math.round(packed/total*100) : 0;
+      const tc = CT[c.type]?.color || 'var(--acc)';
+      return `<div class="card bl" style="border-left-color:${tc}" onclick="nav('container-detail','${c.id}')">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
-          <div>
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
               <span style="font-size:15px;font-weight:700;color:${tc}">${esc(c.code)}</span>
-              ${c.name?`<span style="font-size:12px;color:var(--txt)">${esc(c.name)}</span>`:''}
+              ${c.name ? `<span style="font-size:12px;color:var(--txt);font-weight:600">${esc(c.name)}</span>` : ''}
             </div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-              <span class="badge badge-${c.type}">${CT[c.type]?.label||c.type}</span>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+              <span class="badge badge-${c.type}">${CT[c.type]?.label}</span>
               <span class="badge badge-loc-${c.location}">${LOCS[c.location]?.icon} ${LOCS[c.location]?.label}</span>
               <span class="badge badge-${c.packStatus}">${c.packStatus.toUpperCase()}</span>
-              ${mem?`<span class="dot" style="background:${mem.color}"></span><span style="font-size:10px;color:var(--mut)">${esc(mem.name)}</span>`:''}
+              ${mem ? `<span style="display:inline-flex;align-items:center;gap:3px"><span class="dot" style="background:${mem.color}"></span><span style="font-size:10px;color:var(--mut)">${esc(mem.name)}</span></span>` : ''}
             </div>
           </div>
           <div style="text-align:right;flex-shrink:0">
-            <div style="font-size:11px;color:var(--mut)">${total} item${total!==1?'s':''}</div>
-            ${total>0?`<div style="font-size:10px;color:${packed===total?'#22c55e':'var(--mut)'}">${packed}/${total} packed</div>`:''}
+            <div style="font-size:12px;font-weight:600;color:${packed===total&&total>0?'#22c55e':'var(--txt)'}">${total}</div>
+            <div style="font-size:10px;color:var(--mut)">items</div>
           </div>
         </div>
-        ${total>0?`<div class="prog"><div class="pf" style="width:${Math.round(packed/total*100)}%;background:${tc}"></div></div>`:''}
+        ${total > 0 ? `<div class="prog"><div class="pf" style="width:${pct}%;background:${tc}"></div></div>` : ''}
       </div>`;
     }).join('')}`;
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CONTAINER DETAIL VIEW
-// ═══════════════════════════════════════════
-function vContainerDetail(){
-  const c=gbox(APP.containerId);if(!c){nav('containers');return'';}
-  const mem=gmem(c.assignedTo);
-  const packed=c.items.filter(i=>i.packed).length;
-  const total=c.items.length;
-  const pct=total?Math.round(packed/total*100):0;
-  const tc=CT[c.type]?.color||'var(--acc)';
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function vContainerDetail() {
+  const c = gcon(APP.containerId); if (!c) { nav('containers'); return ''; }
+  const mem = gmem(c.assignedTo);
+  const packed = c.items.filter(i => i.packed).length;
+  const total = c.items.length;
+  const pct = total ? Math.round(packed/total*100) : 0;
+  const tc = CT[c.type]?.color || 'var(--acc)';
 
-  return`
+  return `
     <div class="dh">
       <button class="back" onclick="nav('containers')">←</button>
-      <div class="dh-b">
+      <div class="dh-body">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:18px;font-weight:700;color:${tc}">${esc(c.code)}</span>
-          ${c.name?`<span class="dh-t" style="font-size:14px">${esc(c.name)}</span>`:''}
+          ${c.name ? `<span class="dh-title" style="font-size:14px">${esc(c.name)}</span>` : ''}
         </div>
-        <div class="dh-s">
+        <div class="dh-sub">
           <span class="badge badge-${c.type}">${CT[c.type]?.label}</span>
           <span class="badge badge-${c.packStatus}">${c.packStatus.toUpperCase()}</span>
-          ${mem?`<span class="dot" style="background:${mem.color}"></span><span>${esc(mem.name)}</span>`:''}
+          ${mem ? `<span style="display:inline-flex;align-items:center;gap:4px"><span class="dot" style="background:${mem.color}"></span>${esc(mem.name)}</span>` : ''}
         </div>
-        ${total>0?`<div class="prog"><div class="pf" style="width:${pct}%;background:${tc}"></div></div>
-        <div class="pt"><span>${packed}/${total} packed</span><span>${pct}%</span></div>`:''}
+        ${total > 0 ? `<div class="prog"><div class="pf" style="width:${pct}%;background:${tc}"></div></div>
+        <div class="pt"><span>${packed}/${total} packed</span><span>${pct}%</span></div>` : ''}
       </div>
-      <div class="dh-a">
-        <button class="icon-btn" onclick="showEditContainerModal('${c.id}')">⚙️</button>
+      <div class="dh-acts">
+        <button class="ib2" onclick="showEditContainerModal('${c.id}')">⚙️</button>
       </div>
     </div>
 
-    <div style="padding:10px 16px 4px">
+    <div style="padding:10px 14px 4px">
       <div class="fl">Location</div>
       <div class="loc-toggle">
-        ${Object.entries(LOCS).map(([k,v])=>`<button class="loc-btn${c.location===k?' on-'+k:''}" onclick="setLocation('${c.id}','${k}')">${v.icon} ${v.label}</button>`).join('')}
+        ${Object.entries(LOCS).map(([k,v]) => `<button class="loc-btn${c.location===k?' on-'+k:''}" onclick="setLoc('${c.id}','${k}')">${v.icon} ${v.label}</button>`).join('')}
       </div>
     </div>
 
-    <div style="padding:8px 16px 4px">
-      <button class="btn btn-p btn-sm" style="width:100%;justify-content:center;padding:11px" onclick="enterPack('${c.id}')">▶ Enter Pack Mode</button>
+    <div style="padding:8px 14px 6px">
+      <button class="btn btn-p" style="font-size:12px;padding:12px" onclick="enterPack('${c.id}')">▶ Enter Pack Mode</button>
     </div>
 
     <div class="lbl">Items (${total})</div>
     <div style="border-top:1px solid var(--b)">
-    ${!total?`<div class="empty" style="padding:32px"><div class="ico">📋</div><h3>No items yet</h3><p>Tap + to add items from the catalog.</p></div>`:''}
-    ${c.items.map(i=>`
-      <div class="irow">
-        <div class="ick${i.packed?' on':''}" style="${i.packed?`background:${tc};border-color:${tc}`:''}" onclick="packToggleDirect('${c.id}','${i.id}')">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="ib">
-          <div class="in${i.packed?' x':''}">${esc(i.name)}</div>
-          ${i.qty>1?`<div class="iqty">QTY: ${i.qty}</div>`:''}
-          ${i.notes?`<div class="inotes">${esc(i.notes)}</div>`:''}
-        </div>
-        <div class="ia">
-          <button class="ib2" onclick="showEditItemModal('${c.id}','${i.id}')">✏️</button>
-          <button class="ib2" onclick="showCf('Delete Item','Delete "${esc(i.name)}"?',()=>{dItem('${c.id}','${i.id}');toast('Deleted');render()})">🗑️</button>
-        </div>
-      </div>`).join('')}
+      ${!total ? `<div class="empty" style="padding:28px"><div class="ico">📋</div><h3>Empty</h3><p>Tap + to add items from the catalog.</p></div>` : ''}
+      ${c.items.map(i => `
+        <div class="irow">
+          <div class="ick${i.packed?' on':''}" style="${i.packed?`background:${tc};border-color:${tc}`:''}" onclick="togglePacked('${c.id}','${i.id}');render()">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="ib">
+            <div class="in${i.packed?' x':''}">${esc(i.name)}</div>
+            ${i.qty > 1 ? `<div class="iqty">QTY: ${i.qty}</div>` : ''}
+            ${i.notes ? `<div class="inotes">${esc(i.notes)}</div>` : ''}
+          </div>
+          <div class="ia">
+            <button class="ib2" onclick="showEditItemModal('${c.id}','${i.id}')">✏️</button>
+            <button class="ib2" onclick="confirmDelItem('${c.id}','${i.id}')">🗑️</button>
+          </div>
+        </div>`).join('')}
     </div>`;
 }
-function packToggleDirect(cid,iid){
-  togglePacked(cid,iid);
-  render();
-}
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // CATALOG VIEW
-// ═══════════════════════════════════════════
-function vCatalog(){
-  let list=DB.catalog;
-  if(APP.filterCat!=='all')list=list.filter(c=>c.cat===APP.filterCat);
-  list=[...list].sort((a,b)=>a.name.localeCompare(b.name));
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function vCatalog() {
+  function usage(id) { return DB.containers.reduce((a,c) => a + (c.items.some(i => i.catalogId===id) ? 1 : 0), 0); }
+  let list = [...DB.catalog].sort((a,b) => a.name.localeCompare(b.name));
+  if (APP.filterCat !== 'all') list = list.filter(c => c.cat === APP.filterCat);
 
-  function usageCount(id){return DB.containers.reduce((a,c)=>a+(c.items.some(i=>i.catalogId===id)?1:0),0)}
-
-  return`
-    <div class="ph"><div class="ph-l"><div class="pt" style="margin:0">Catalog</div><div class="ps">${DB.catalog.length} items</div></div></div>
+  return `
+    <div class="ph"><div><div class="ph-title">Catalog</div><div class="ph-sub">${DB.catalog.length} items</div></div></div>
     <div class="pills">
       <button class="pill${APP.filterCat==='all'?' on':''}" onclick="APP.filterCat='all';render()">All</button>
-      ${Object.entries(CATS).map(([k,v])=>`<button class="pill${APP.filterCat===k?' on':''}" onclick="APP.filterCat='${k}';render()">${v.label}</button>`).join('')}
+      ${Object.entries(CATS).map(([k,v]) => `<button class="pill${APP.filterCat===k?' on':''}" onclick="APP.filterCat='${k}';render()">${v.label}</button>`).join('')}
     </div>
-    ${!list.length?`<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Tap + to add items to the catalog.</p></div>`:''}
+    ${!list.length ? `<div class="empty"><div class="ico">📋</div><h3>Empty</h3><p>Tap + to add catalog items.</p></div>` : ''}
     <div style="border-top:1px solid var(--b)">
-    ${list.map(c=>{
-      const n=usageCount(c.id);
-      return`<div class="irow" style="cursor:default">
+    ${list.map(c => {
+      const n = usage(c.id);
+      return `<div class="irow" style="cursor:default">
         <div class="ib">
           <div class="in">${esc(c.name)}</div>
-          <div style="display:flex;gap:8px;margin-top:3px">
-            <span class="badge cat-${c.cat}" style="border:1px solid currentColor;opacity:.7">${CATS[c.cat]?.label||c.cat}</span>
-            ${n>0?`<span style="font-size:10px;color:var(--mut)">Used in ${n} container${n!==1?'s':''}</span>`:''}
+          <div style="display:flex;gap:6px;margin-top:3px;align-items:center;flex-wrap:wrap">
+            <span class="badge cat-${c.cat}" style="border:1px solid currentColor">${CATS[c.cat]?.label||c.cat}</span>
+            ${n > 0 ? `<span style="font-size:10px;color:var(--mut)">in ${n} container${n!==1?'s':''}</span>` : ''}
           </div>
         </div>
-        <div class="ia">
-          <button class="ib2" onclick="showCf('Delete Item','Remove "${esc(c.name)}" from catalog?',()=>{dCatalogItem('${c.id}');toast('Removed');render()})">🗑️</button>
-        </div>
+        <button class="ib2" onclick="confirmDelCatalog('${c.id}')">🗑️</button>
       </div>`;
     }).join('')}
     </div>`;
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SEARCH VIEW
-// ═══════════════════════════════════════════
-function vSearch(){
-  return`<div class="sw"><div class="siw">
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function vSearch() {
+  return `<div class="sw"><div class="siw">
     <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input class="si" id="si" placeholder="Search items across all containers…" autocomplete="off" autocorrect="off" spellcheck="false">
   </div></div>
-  <div id="sr">${vSearchResults()}</div>`;
+  <div id="sr">${vSearchRes()}</div>`;
 }
-function wireSearch(){
-  const si=document.getElementById('si');
-  if(!si)return;
-  si.value=APP.searchQ;
-  si.addEventListener('input',e=>{APP.searchQ=e.target.value;document.getElementById('sr').innerHTML=vSearchResults()});
-  setTimeout(()=>si.focus(),80);
+function wireSearch() {
+  const si = document.getElementById('si');
+  if (!si) return;
+  si.value = APP.searchQ;
+  si.addEventListener('input', e => { APP.searchQ = e.target.value; document.getElementById('sr').innerHTML = vSearchRes(); });
+  setTimeout(() => si.focus(), 80);
 }
-function vSearchResults(){
-  const q=(APP.searchQ||'').toLowerCase().trim();
-  if(!q)return`<div class="empty"><div class="ico">🔍</div><h3>Search gear</h3><p>Search items across all containers by name or notes.</p></div>`;
-  const res=[];
-  DB.containers.forEach(c=>{
-    c.items.forEach(i=>{
-      if(i.name.toLowerCase().includes(q)||(i.notes||'').toLowerCase().includes(q)){
-        res.push({c,i});
-      }
-    });
-  });
-  if(!res.length)return`<div class="empty"><div class="ico">🤷</div><h3>No results</h3><p>Nothing matched "<strong>${esc(q)}</strong>".</p></div>`;
-  return res.map(({c,i})=>{
-    const tc=CT[c.type]?.color||'var(--acc)';
-    return`<div class="card bl" style="border-left-color:${tc}" onclick="nav('container-detail','${c.id}')">
+function vSearchRes() {
+  const q = (APP.searchQ||'').toLowerCase().trim();
+  if (!q) return `<div class="empty"><div class="ico">🔍</div><h3>Search Gear</h3><p>Search all items across every container by name or notes.</p></div>`;
+  const res = [];
+  DB.containers.forEach(c => c.items.forEach(i => { if (i.name.toLowerCase().includes(q)||(i.notes||'').toLowerCase().includes(q)) res.push({c,i}); }));
+  if (!res.length) return `<div class="empty"><div class="ico">🤷</div><h3>No results</h3><p>Nothing matched "<strong>${esc(q)}</strong>".</p></div>`;
+  return res.map(({c,i}) => {
+    const tc = CT[c.type]?.color || 'var(--acc)';
+    return `<div class="card bl" style="border-left-color:${tc}" onclick="nav('container-detail','${c.id}')">
       <div style="font-size:13px;font-weight:600">${esc(i.name)}</div>
-      <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
-        <span style="font-size:12px;font-weight:700;color:${tc}">${esc(c.code)}</span>
-        ${c.name?`<span style="font-size:11px;color:var(--mut)">${esc(c.name)}</span>`:''}
+      <div style="display:flex;gap:6px;margin-top:4px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:700;color:${tc}">${esc(c.code)}</span>
+        ${c.name ? `<span style="font-size:11px;color:var(--mut)">${esc(c.name)}</span>` : ''}
         <span class="badge badge-loc-${c.location}">${LOCS[c.location]?.icon} ${LOCS[c.location]?.label}</span>
       </div>
-      ${i.notes?`<div style="font-size:11px;color:var(--mut);margin-top:4px">${esc(i.notes)}</div>`:''}
+      ${i.qty > 1 ? `<div class="iqty" style="margin-top:4px">QTY: ${i.qty}</div>` : ''}
+      ${i.notes ? `<div class="inotes" style="margin-top:4px">${esc(i.notes)}</div>` : ''}
     </div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // INIT
-// ═══════════════════════════════════════════
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 loadLocal();
 render();
-if(APP.dbUrl)startPoll();
-if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if (APP.dbUrl) startPoll();
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
