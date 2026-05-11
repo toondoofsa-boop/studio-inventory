@@ -1,512 +1,1253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0a0a0a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Studio Inv">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <title>Studio Inventory</title>
-  <style>
-    :root{--bg:#0a0a0a;--surf:#111111;--brd:#1a1a1a;--acc:#f5c842;--txt:#e8e8e8;--muted:#666;--danger:#ef4444;--nav:64px}
-    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrains Mono','Courier New',monospace;font-size:14px;line-height:1.5;overflow:hidden}
-    #app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
-    #view{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);-webkit-overflow-scrolling:touch}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Studio Inv">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>Studio Inventory</title>
+<style>
+:root{--bg:#0a0a0a;--s:#111;--b:#1a1a1a;--b2:#222;--acc:#f5c842;--txt:#e8e8e8;--mut:#555;--danger:#ef4444;--nav:64px;--sc:#94a3b8;--bc:#64748b;--cb:#06b6d4}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--txt);font-family:'JetBrains Mono','Courier New',monospace;font-size:14px;line-height:1.5;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
+#view{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 8px);-webkit-overflow-scrolling:touch}
 
-    /* Typography */
-    .lbl{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);padding:16px 16px 8px}
+/* Nav */
+#bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:calc(var(--nav) + env(safe-area-inset-bottom));background:var(--s);border-top:1px solid var(--b);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;border:none;background:transparent;color:var(--mut);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:inherit;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .15s}
+.nb.on{color:var(--acc)}
+.nb svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none}
 
-    /* Stats */
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px}
-    .stat{background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:14px 8px;text-align:center}
-    .stat-n{font-size:28px;font-weight:700;color:var(--acc);line-height:1;margin-bottom:4px}
-    .stat-l{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* FAB */
+#fab{position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 16px);right:max(16px,calc(50vw - 224px));width:52px;height:52px;border-radius:50%;background:var(--acc);border:none;color:#0a0a0a;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 20px rgba(245,200,66,.35);transition:transform .15s,opacity .2s}
+#fab:active{transform:scale(.92)}
+#fab.hide{opacity:0;pointer-events:none}
 
-    /* Cards */
-    .card{background:var(--surf);border:1px solid var(--brd);border-radius:8px;margin:0 16px 8px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:opacity .15s}
-    .card:active{opacity:.75}
-    .card.cb{border-left-width:3px}
-    .ct{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:4px}
-    .cs{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:2px}
-    .badge{font-size:10px;font-weight:600;background:var(--brd);color:var(--muted);padding:2px 7px;border-radius:100px}
-    .badge.ok{background:rgba(245,200,66,.15);color:var(--acc)}
-    .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;display:inline-block}
+/* Modal */
+#mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center}
+#mo.on{display:flex}
+#mb{background:var(--s);border:1px solid var(--b);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:sup .2s ease-out}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:36px;height:4px;background:var(--b2);border-radius:2px;margin:12px auto 0}
+.mt{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--acc);padding:14px 20px 2px}
+.mbd{padding:10px 20px 4px}
 
-    /* Progress */
-    .prog-wrap{margin-top:10px}
-    .prog{height:3px;background:var(--brd);border-radius:2px;overflow:hidden}
-    .prog-fill{height:100%;border-radius:2px;transition:width .3s}
-    .prog-txt{font-size:10px;color:var(--muted);margin-top:4px;display:flex;justify-content:space-between}
+/* Confirm */
+#cf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:center;justify-content:center;padding:24px}
+#cf.on{display:flex}
+#cfb{background:var(--s);border:1px solid var(--b);border-radius:12px;padding:24px;width:100%;max-width:300px}
+.cf-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt);margin-bottom:8px}
+.cf-m{font-size:12px;color:var(--mut);margin-bottom:20px;line-height:1.6}
+.cf-r{display:flex;gap:8px}
+.cf-r .btn{margin:0;flex:1}
 
-    /* Page header */
-    .ph{padding:20px 16px 8px}
-    .ph-title{font-size:22px;font-weight:700;color:var(--txt)}
-    .ph-sub{font-size:11px;color:var(--muted);margin-top:4px}
+/* Toast */
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--s);border:1px solid var(--b);color:var(--txt);font-family:inherit;font-size:12px;font-weight:500;padding:9px 18px;border-radius:100px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:90vw}
+#toast.on{opacity:1}
 
-    /* Detail header */
-    .dh{padding:16px 16px 12px;border-bottom:1px solid var(--brd);display:flex;align-items:flex-start;gap:12px}
-    .back{width:32px;height:32px;border-radius:8px;border:1px solid var(--brd);background:var(--surf);color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;line-height:1}
-    .dh-body{flex:1;min-width:0}
-    .dh-title{font-size:18px;font-weight:700;color:var(--txt);word-break:break-word}
-    .dh-sub{font-size:11px;color:var(--muted);margin-top:3px;display:flex;align-items:center;gap:6px}
-    .dh-acts{display:flex;gap:4px;flex-shrink:0}
+/* Sync badge */
+#sync{position:fixed;top:12px;right:max(12px,calc(50vw - 228px));font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:100px;background:var(--b2);border:1px solid var(--b);z-index:150;transition:all .3s}
+#sync.ok{color:#22c55e;border-color:#22c55e33}
+#sync.ing{color:var(--acc);border-color:#f5c84233}
+#sync.err{color:var(--danger);border-color:#ef444433}
+#sync.off{color:var(--mut)}
 
-    /* Item rows */
-    .items-sec{border-top:1px solid var(--brd)}
-    .irow{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--brd)}
-    .irow:last-child{border-bottom:none}
-    .ichk{width:20px;height:20px;border-radius:4px;border:2px solid var(--brd);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
-    .ichk svg{width:12px;height:12px;stroke:#0a0a0a;stroke-width:2.5;fill:none;display:none}
-    .ichk.on svg{display:block}
-    .ibody{flex:1;min-width:0}
-    .iname{font-size:13px;font-weight:500;color:var(--txt);word-break:break-word}
-    .iname.strike{text-decoration:line-through;color:var(--muted)}
-    .inotes{font-size:11px;color:var(--muted);margin-top:2px;word-break:break-word}
-    .iacts{display:flex;gap:4px;flex-shrink:0}
-    .ibtn{width:30px;height:30px;border-radius:6px;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:background .15s}
-    .ibtn:active{background:var(--brd)}
+/* Pack Mode full-screen */
+#pack-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;flex-direction:column;max-width:480px;margin:0 auto}
+#pack-screen.on{display:flex}
+.pack-head{padding:16px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.pack-body{flex:1;overflow-y:auto;padding-bottom:100px}
+.pack-foot{position:absolute;bottom:env(safe-area-inset-bottom);left:0;right:0;padding:12px 16px;background:var(--bg);border-top:1px solid var(--b);display:flex;gap:8px}
 
-    /* Empty state */
-    .empty{text-align:center;padding:56px 32px;color:var(--muted)}
-    .empty .ico{font-size:40px;margin-bottom:16px}
-    .empty h3{font-size:12px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-    .empty p{font-size:11px;line-height:1.7}
+/* Cards */
+.card{background:var(--s);border:1px solid var(--b);border-radius:8px;margin:0 16px 8px;padding:14px 16px;cursor:pointer;position:relative;overflow:hidden;transition:opacity .15s}
+.card:active{opacity:.75}
+.card.bl{border-left-width:3px}
 
-    /* Bottom nav */
-    #bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:calc(var(--nav) + env(safe-area-inset-bottom));background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
-    .nb{flex:1;border:none;background:transparent;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-family:inherit;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .15s}
-    .nb.on{color:var(--acc)}
-    .nb svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none}
+/* Progress */
+.prog{height:3px;background:var(--b);border-radius:2px;overflow:hidden;margin-top:8px}
+.pf{height:100%;border-radius:2px;transition:width .3s}
+.pt{font-size:10px;color:var(--mut);margin-top:4px;display:flex;justify-content:space-between}
 
-    /* FAB */
-    #fab{position:fixed;bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 16px);right:max(16px,calc(50vw - 224px));width:56px;height:56px;border-radius:50%;background:var(--acc);border:none;color:#0a0a0a;font-size:28px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:99;box-shadow:0 4px 20px rgba(245,200,66,.35);transition:transform .15s,box-shadow .15s,opacity .2s}
-    #fab:active{transform:scale(.92);box-shadow:0 2px 10px rgba(245,200,66,.2)}
-    #fab.hide{opacity:0;pointer-events:none}
+/* Badges */
+.badge{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:100px;border:1px solid transparent}
+.badge-loc-studio{color:#22c55e;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2)}
+.badge-loc-gig{color:#f97316;background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.2)}
+.badge-loc-transit{color:#a855f7;background:rgba(168,85,247,.1);border-color:rgba(168,85,247,.2)}
+.badge-packed{color:#22c55e;background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2)}
+.badge-unpacked{color:var(--mut);background:var(--b2);border-color:var(--b)}
+.badge-packing{color:var(--acc);background:rgba(245,200,66,.1);border-color:rgba(245,200,66,.2)}
+.badge-sc{color:var(--sc);background:rgba(148,163,184,.1);border-color:rgba(148,163,184,.2)}
+.badge-bc{color:var(--bc);background:rgba(100,116,139,.1);border-color:rgba(100,116,139,.2)}
+.badge-cb{color:var(--cb);background:rgba(6,182,212,.1);border-color:rgba(6,182,212,.2)}
 
-    /* Modal */
-    #moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:flex-end;justify-content:center}
-    #moverlay.on{display:flex}
-    #mbox{background:var(--surf);border:1px solid var(--brd);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom));animation:up .2s ease-out}
-    @keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
-    .mhandle{width:40px;height:4px;background:var(--brd);border-radius:2px;margin:12px auto 0}
-    .mtitle{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--acc);padding:16px 20px 4px}
-    .mbody{padding:12px 20px 4px}
+/* Page header */
+.ph{padding:18px 16px 8px;display:flex;align-items:flex-start;justify-content:space-between}
+.ph-l .pt{font-size:20px;font-weight:700;color:var(--txt);margin:0}
+.ph-l .ps{font-size:11px;color:var(--mut);margin-top:3px}
+.ph-r{display:flex;gap:8px;flex-shrink:0}
 
-    /* Form */
-    .fg{margin-bottom:16px}
-    .fl{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-    .fi{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s}
-    .fi:focus{border-color:var(--acc)}
-    .fi::placeholder{color:var(--muted)}
-    textarea.fi{resize:none;min-height:68px}
-    select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+/* Detail header */
+.dh{padding:14px 16px 12px;border-bottom:1px solid var(--b);display:flex;align-items:flex-start;gap:12px}
+.back{width:32px;height:32px;border-radius:8px;border:1px solid var(--b);background:var(--s);color:var(--txt);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:17px}
+.dh-b{flex:1;min-width:0}
+.dh-t{font-size:17px;font-weight:700;color:var(--txt);word-break:break-word}
+.dh-s{font-size:11px;color:var(--mut);margin-top:3px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dh-a{display:flex;gap:4px;flex-shrink:0}
 
-    /* Color picker */
-    .cgrid{display:flex;flex-wrap:wrap;gap:10px}
-    .copt{width:32px;height:32px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .1s,border-color .1s}
-    .copt:active{transform:scale(.9)}
-    .copt.sel{border-color:#fff;transform:scale(1.12)}
+/* Item rows */
+.irow{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--b)}
+.irow:last-child{border-bottom:none}
+.ick{width:22px;height:22px;border-radius:5px;border:2px solid var(--b2);flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.ick.on{border-color:transparent}
+.ick svg{width:13px;height:13px;stroke:#0a0a0a;stroke-width:2.5;fill:none;display:none}
+.ick.on svg{display:block}
+.ib{flex:1;min-width:0}
+.in{font-size:13px;font-weight:500;color:var(--txt);word-break:break-word}
+.in.x{text-decoration:line-through;color:var(--mut)}
+.inotes{font-size:11px;color:var(--mut);margin-top:2px}
+.iqty{font-size:10px;color:var(--acc);font-weight:700;margin-top:1px}
+.ia{display:flex;gap:2px;flex-shrink:0}
+.ib2{width:28px;height:28px;border-radius:6px;border:none;background:transparent;color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.ib2:active{background:var(--b)}
 
-    /* Buttons */
-    .btn{display:block;width:100%;padding:12px;border-radius:8px;border:none;font-family:inherit;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;margin-top:4px}
-    .btn:active{opacity:.8}
-    .btn-p{background:var(--acc);color:#0a0a0a}
-    .btn-d{background:var(--danger);color:#fff}
-    .btn-g{background:transparent;border:1px solid var(--brd);color:var(--muted)}
+/* Pack item row - bigger */
+.pick{width:32px;height:32px;border-radius:8px;border:2px solid var(--b2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.pick.on{border-color:transparent}
+.pick svg{width:18px;height:18px;stroke:#0a0a0a;stroke-width:2.5;fill:none;display:none}
+.pick.on svg{display:block}
 
-    /* Confirm */
-    #conf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:400;align-items:center;justify-content:center;padding:24px}
-    #conf.on{display:flex}
-    #cbox{background:var(--surf);border:1px solid var(--brd);border-radius:12px;padding:24px;width:100%;max-width:300px}
-    .ctitle{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--txt);margin-bottom:8px}
-    .cmsg{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6}
-    .cbtns{display:flex;gap:8px}
-    .cbtns .btn{margin:0;flex:1}
+/* Lbl */
+.lbl{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--mut);padding:14px 16px 6px}
 
-    /* Toast */
-    #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--surf);border:1px solid var(--brd);color:var(--txt);font-family:inherit;font-size:12px;font-weight:500;padding:10px 20px;border-radius:100px;z-index:500;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
-    #toast.on{opacity:1}
+/* Form */
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+.fi{width:100%;background:var(--bg);border:1px solid var(--b);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px 12px;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--acc)}
+.fi::placeholder{color:var(--mut)}
+textarea.fi{resize:none;min-height:64px}
+select.fi{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
 
-    /* Search */
-    .swrap{padding:12px 16px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--brd)}
-    .sinwrap{position:relative}
-    .sinwrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--muted);stroke-width:2;fill:none}
-    .sin{width:100%;background:var(--surf);border:1px solid var(--brd);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:10px 12px 10px 36px;outline:none;transition:border-color .15s}
-    .sin:focus{border-color:var(--acc)}
-    .sin::placeholder{color:var(--muted)}
-  </style>
+/* Buttons */
+.btn{display:block;width:100%;padding:12px;border-radius:8px;border:none;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:opacity .15s;margin-top:6px}
+.btn:active{opacity:.8}
+.btn-p{background:var(--acc);color:#0a0a0a}
+.btn-d{background:var(--danger);color:#fff}
+.btn-g{background:transparent;border:1px solid var(--b);color:var(--mut)}
+.btn-sm{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;font-size:10px;width:auto}
+
+/* Filter pills */
+.pills{display:flex;gap:6px;padding:10px 16px;overflow-x:auto;scrollbar-width:none}
+.pills::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0;padding:5px 12px;border-radius:100px;border:1px solid var(--b);background:var(--b2);color:var(--mut);font-family:inherit;font-size:10px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all .15s}
+.pill.on{background:var(--acc);border-color:var(--acc);color:#0a0a0a}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px 8px}
+.stat{background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px 8px;text-align:center}
+.sn{font-size:26px;font-weight:700;color:var(--acc);line-height:1;margin-bottom:3px}
+.sl{font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut)}
+
+/* Member chips */
+.members{display:flex;gap:8px;padding:8px 16px 12px}
+.mchip{flex:1;padding:10px 8px;border-radius:8px;border:2px solid var(--b);background:var(--s);cursor:pointer;text-align:center;transition:all .15s}
+.mchip.on{border-width:2px}
+.mchip-n{font-size:11px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mchip-dot{width:8px;height:8px;border-radius:50%;margin:4px auto 0}
+
+/* Activity */
+.act-row{display:flex;gap:10px;padding:9px 16px;border-bottom:1px solid var(--b);align-items:flex-start}
+.act-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.act-t{font-size:11px;color:var(--txt);flex:1}
+.act-time{font-size:10px;color:var(--mut);flex-shrink:0}
+
+/* Type selector in modal */
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.type-opt{padding:14px 8px;border-radius:8px;border:2px solid var(--b);background:var(--bg);cursor:pointer;text-align:center;transition:all .15s}
+.type-opt.sel{border-width:2px}
+.type-opt-icon{font-size:22px;margin-bottom:4px}
+.type-opt-label{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt)}
+.type-opt-code{font-size:9px;color:var(--mut);margin-top:2px}
+
+/* Search */
+.sw{padding:10px 16px;position:sticky;top:0;background:var(--bg);z-index:10;border-bottom:1px solid var(--b)}
+.siw{position:relative}
+.siw svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;stroke:var(--mut);stroke-width:2;fill:none}
+.si{width:100%;background:var(--s);border:1px solid var(--b);border-radius:8px;color:var(--txt);font-family:inherit;font-size:13px;padding:9px 12px 9px 34px;outline:none;transition:border-color .15s}
+.si:focus{border-color:var(--acc)}
+.si::placeholder{color:var(--mut)}
+
+/* Dot */
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* Empty */
+.empty{text-align:center;padding:52px 32px;color:var(--mut)}
+.empty .ico{font-size:38px;margin-bottom:14px}
+.empty h3{font-size:11px;font-weight:700;color:var(--txt);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.empty p{font-size:11px;line-height:1.7}
+
+/* Setup screen */
+.setup-screen{min-height:100%;background:var(--bg);padding:40px 24px;display:flex;flex-direction:column;gap:0}
+.setup-logo{font-size:28px;font-weight:700;color:var(--acc);letter-spacing:-.5px;margin-bottom:4px}
+.setup-sub{font-size:11px;color:var(--mut);margin-bottom:32px}
+.setup-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start}
+.setup-step-n{width:22px;height:22px;border-radius:50%;background:var(--acc);color:#0a0a0a;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.setup-step-t{font-size:12px;color:var(--txt);line-height:1.5}
+.setup-step-t a{color:var(--acc);text-decoration:none}
+.setup-divider{height:1px;background:var(--b);margin:20px 0}
+
+/* Location toggle */
+.loc-toggle{display:flex;gap:6px;flex-wrap:wrap}
+.loc-btn{padding:6px 12px;border-radius:100px;border:1px solid var(--b);background:var(--bg);font-family:inherit;font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;color:var(--mut)}
+.loc-btn.on-studio{background:rgba(34,197,94,.12);border-color:#22c55e;color:#22c55e}
+.loc-btn.on-gig{background:rgba(249,115,22,.12);border-color:#f97316;color:#f97316}
+.loc-btn.on-transit{background:rgba(168,85,247,.12);border-color:#a855f7;color:#a855f7}
+
+/* Catalog category pill colors */
+.cat-cables{color:#f59e0b}.cat-mics{color:#ef4444}.cat-stands{color:#8b5cf6}.cat-drums{color:#f97316}.cat-guitar{color:#3b82f6}.cat-keys{color:#ec4899}.cat-audio{color:#06b6d4}.cat-misc{color:var(--mut)}
+
+/* Section actions */
+.sec-row{display:flex;align-items:center;justify-content:space-between;padding:0 16px 4px}
+
+/* Icon button */
+.icon-btn{width:30px;height:30px;border-radius:6px;border:none;background:transparent;color:var(--mut);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px}
+.icon-btn:active{background:var(--b)}
+
+/* Color swatch for member */
+.cswatch{display:flex;gap:10px;flex-wrap:wrap}
+.csw{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .1s}
+.csw.sel{border-color:#fff;transform:scale(1.15)}
+
+/* Search catalog in add-item modal */
+.cat-list{max-height:220px;overflow-y:auto;border:1px solid var(--b);border-radius:8px;margin-top:6px}
+.cat-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--b);cursor:pointer;transition:background .1s}
+.cat-item:last-child{border-bottom:none}
+.cat-item:active{background:var(--b2)}
+.cat-item-n{font-size:12px;color:var(--txt);flex:1}
+.cat-item-c{font-size:10px;color:var(--mut)}
+.cat-item.sel-item{background:rgba(245,200,66,.08)}
+
+/* Qty input */
+.qty-row{display:flex;align-items:center;gap:8px}
+.qty-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--b);background:var(--bg);color:var(--txt);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qty-val{width:48px;text-align:center;background:var(--bg);border:1px solid var(--b);border-radius:6px;color:var(--txt);font-family:inherit;font-size:14px;font-weight:700;padding:6px;outline:none}
+.qty-val:focus{border-color:var(--acc)}
+</style>
 </head>
 <body>
 <div id="app">
   <div id="view"></div>
   <nav id="bnav">
     <button class="nb" data-tab="home" onclick="nav('home')">
-      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      Home
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
     </button>
-    <button class="nb" data-tab="boxes" onclick="nav('boxes')">
-      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-      Boxes
+    <button class="nb" data-tab="containers" onclick="nav('containers')">
+      <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>Containers
     </button>
-    <button class="nb" data-tab="setups" onclick="nav('setups')">
-      <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Setups
+    <button class="nb" data-tab="catalog" onclick="nav('catalog')">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Catalog
     </button>
     <button class="nb" data-tab="search" onclick="nav('search')">
-      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Search
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Search
     </button>
   </nav>
   <button id="fab" onclick="handleFab()">+</button>
 </div>
 
-<div id="moverlay" onclick="overlayClick(event)">
-  <div id="mbox">
-    <div class="mhandle"></div>
-    <div class="mtitle" id="mtitle"></div>
-    <div class="mbody" id="mbody"></div>
+<!-- Pack Mode -->
+<div id="pack-screen">
+  <div class="pack-head">
+    <button class="back" onclick="exitPack()">←</button>
+    <div style="flex:1">
+      <div id="pack-title" style="font-size:15px;font-weight:700"></div>
+      <div style="font-size:11px;color:var(--mut);margin-top:2px">Pack Mode</div>
+      <div class="prog"><div class="pf" id="pack-prog-fill" style="background:var(--acc)"></div></div>
+      <div class="pt"><span id="pack-prog-txt"></span><span id="pack-prog-pct"></span></div>
+    </div>
+  </div>
+  <div class="pack-body" id="pack-body"></div>
+  <div class="pack-foot">
+    <button class="btn btn-g btn-sm" style="flex:1" onclick="packReset()">Reset All</button>
+    <button class="btn btn-p btn-sm" style="flex:2" onclick="packDone()">✓ Done Packing</button>
   </div>
 </div>
 
-<div id="conf">
-  <div id="cbox">
-    <div class="ctitle" id="ctitle"></div>
-    <div class="cmsg" id="cmsg"></div>
-    <div class="cbtns">
-      <button class="btn btn-g" onclick="hideConf()">Cancel</button>
-      <button class="btn btn-d" id="cok">Delete</button>
+<!-- Modal -->
+<div id="mo" onclick="moClick(event)">
+  <div id="mb">
+    <div class="mh"></div>
+    <div class="mt" id="mt"></div>
+    <div class="mbd" id="mbd"></div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div id="cf">
+  <div id="cfb">
+    <div class="cf-t" id="cf-t"></div>
+    <div class="cf-m" id="cf-m"></div>
+    <div class="cf-r">
+      <button class="btn btn-g" onclick="hideCf()">Cancel</button>
+      <button class="btn btn-d" id="cf-ok">Delete</button>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
+<div id="sync"></div>
 
 <script>
-// ── Constants ──────────────────────────────────────────────
-const COLORS=['#f5c842','#ef4444','#3b82f6','#22c55e','#a855f7','#f97316','#06b6d4','#ec4899','#84cc16','#64748b'];
+// ═══════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════
+const CT = {
+  sc:{label:'Silver Case',prefix:'SC',color:'#94a3b8'},
+  bc:{label:'Black Crate',prefix:'BC',color:'#64748b'},
+  cb:{label:'Clear Box',prefix:'CB',color:'#06b6d4'},
+};
+const LOCS = {
+  studio:{label:'Studio',icon:'🏠'},
+  gig:{label:'At Gig',icon:'🎤'},
+  transit:{label:'Transit',icon:'🚐'},
+};
+const CATS = {
+  cables:{label:'Cables'},mics:{label:'Mics'},stands:{label:'Stands'},
+  drums:{label:'Drums'},guitar:{label:'Guitar/Bass'},keys:{label:'Keys'},
+  audio:{label:'Audio/DI'},misc:{label:'Misc'},
+};
+const MCOLORS = ['#f5c842','#3b82f6','#22c55e','#ef4444','#a855f7','#f97316'];
+const SEED = [
+  {id:'s01',name:'XLR Cable 1m',cat:'cables'},{id:'s02',name:'XLR Cable 3m',cat:'cables'},
+  {id:'s03',name:'XLR Cable 6m',cat:'cables'},{id:'s04',name:'XLR Cable 10m',cat:'cables'},
+  {id:'s05',name:'Guitar Cable 3m',cat:'cables'},{id:'s06',name:'Guitar Cable 6m',cat:'cables'},
+  {id:'s07',name:'Patch Cable',cat:'cables'},{id:'s08',name:'TRS Cable',cat:'cables'},
+  {id:'s09',name:'Speaker Cable',cat:'cables'},{id:'s10',name:'Snake / Multicore',cat:'cables'},
+  {id:'s11',name:'SM58 Dynamic Mic',cat:'mics'},{id:'s12',name:'SM57 Dynamic Mic',cat:'mics'},
+  {id:'s13',name:'Condenser Mic',cat:'mics'},{id:'s14',name:'Mic Clip',cat:'mics'},
+  {id:'s15',name:'Mic Stand (Boom)',cat:'stands'},{id:'s16',name:'Mic Stand (Straight)',cat:'stands'},
+  {id:'s17',name:'Guitar Stand',cat:'stands'},{id:'s18',name:'Keyboard Stand',cat:'stands'},
+  {id:'s19',name:'Drumsticks',cat:'drums'},{id:'s20',name:'Snare Drum',cat:'drums'},
+  {id:'s21',name:'Bass Drum Pedal',cat:'drums'},{id:'s22',name:'Hi-Hat Stand',cat:'drums'},
+  {id:'s23',name:'Cymbal Stand (Straight)',cat:'drums'},{id:'s24',name:'Cymbal Stand (Boom)',cat:'drums'},
+  {id:'s25',name:'Drum Key',cat:'drums'},{id:'s26',name:'Drum Rug',cat:'drums'},
+  {id:'s27',name:'Drum Stool',cat:'drums'},{id:'s28',name:'Guitar Strings (set)',cat:'guitar'},
+  {id:'s29',name:'Bass Strings (set)',cat:'guitar'},{id:'s30',name:'Guitar Picks',cat:'guitar'},
+  {id:'s31',name:'Capo',cat:'guitar'},{id:'s32',name:'Clip-on Tuner',cat:'guitar'},
+  {id:'s33',name:'Guitar Strap',cat:'guitar'},{id:'s34',name:'Guitar (instrument)',cat:'guitar'},
+  {id:'s35',name:'Bass Guitar (instrument)',cat:'guitar'},{id:'s36',name:'Keyboard / Synth',cat:'keys'},
+  {id:'s37',name:'Sustain Pedal',cat:'keys'},{id:'s38',name:'Expression Pedal',cat:'keys'},
+  {id:'s39',name:'DI Box (Passive)',cat:'audio'},{id:'s40',name:'DI Box (Active)',cat:'audio'},
+  {id:'s41',name:'Audio Interface',cat:'audio'},{id:'s42',name:'Headphones',cat:'audio'},
+  {id:'s43',name:'In-Ear Monitors (IEM)',cat:'audio'},{id:'s44',name:'Monitor Speaker',cat:'audio'},
+  {id:'s45',name:'Extension Lead',cat:'misc'},{id:'s46',name:'Power Strip (surge)',cat:'misc'},
+  {id:'s47',name:'Gaffer Tape',cat:'misc'},{id:'s48',name:'Spare Batteries',cat:'misc'},
+  {id:'s49',name:'Setlist / Notebook',cat:'misc'},{id:'s50',name:'Pen / Marker',cat:'misc'},
+  {id:'s51',name:'LED Light',cat:'misc'},{id:'s52',name:'Equipment Rack',cat:'misc'},
+];
 
-// ── State ──────────────────────────────────────────────────
-let S={view:'home',boxId:null,setupId:null,q:'',boxes:[],setups:[]};
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let DB = {
+  bandName:'The Studio',
+  members:[
+    {id:'m1',name:'Member 1',color:'#f5c842'},
+    {id:'m2',name:'Member 2',color:'#3b82f6'},
+    {id:'m3',name:'Member 3',color:'#22c55e'},
+  ],
+  catalog:[],
+  containers:[],
+  activity:[],
+  _v:0,
+};
+let APP = {
+  view:'setup',
+  containerId:null,
+  filterType:'all',
+  filterLoc:'all',
+  filterCat:'all',
+  searchQ:'',
+  currentMember:null,
+  dbUrl:null,
+  syncStatus:'off',
+  packContainerId:null,
+  setupStep:1, // 1=firebase, 2=members
+};
+let _addItemCatId = null;
+let _addItemQty = 1;
+let _selType = 'sc';
+let _pollTimer = null;
 
-// ── Persistence ────────────────────────────────────────────
-function load(){try{S.boxes=JSON.parse(localStorage.getItem('studio-boxes')||'[]')}catch(e){S.boxes=[]}try{S.setups=JSON.parse(localStorage.getItem('studio-setups')||'[]')}catch(e){S.setups=[]}}
-function save(){localStorage.setItem('studio-boxes',JSON.stringify(S.boxes));localStorage.setItem('studio-setups',JSON.stringify(S.setups))}
+// ═══════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════
+function loadLocal(){
+  try{const d=JSON.parse(localStorage.getItem('studio-db')||'{}');if(d._v!==undefined)DB=Object.assign(DB,d);}catch(e){}
+  APP.dbUrl=localStorage.getItem('studio-fb-url')||null;
+  APP.currentMember=localStorage.getItem('studio-member')||null;
+  if(localStorage.getItem('studio-ready')==='1'){APP.view='home';}
+}
+function saveLocal(){localStorage.setItem('studio-db',JSON.stringify(DB));}
 
-// ── Utilities ──────────────────────────────────────────────
+// ═══════════════════════════════════════════
+// FIREBASE SYNC
+// ═══════════════════════════════════════════
+function setSyncStatus(s){
+  APP.syncStatus=s;
+  const el=document.getElementById('sync');
+  if(!el)return;
+  const map={synced:{cls:'ok',txt:'● Synced'},syncing:{cls:'ing',txt:'↑ Syncing'},error:{cls:'err',txt:'✕ Sync Error'},off:{cls:'off',txt:'○ Offline'}};
+  const m=map[s]||map.off;
+  el.className=m.cls;el.textContent=m.txt;
+}
+
+async function fbGet(){
+  if(!APP.dbUrl)return null;
+  try{
+    const r=await fetch(APP.dbUrl+'/studio.json');
+    if(!r.ok)return null;
+    return await r.json();
+  }catch(e){return null;}
+}
+async function fbPut(data){
+  if(!APP.dbUrl)return false;
+  try{
+    const r=await fetch(APP.dbUrl+'/studio.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    return r.ok;
+  }catch(e){return false;}
+}
+
+async function syncPull(){
+  if(!APP.dbUrl){setSyncStatus('off');return;}
+  const remote=await fbGet();
+  if(!remote){setSyncStatus('error');return;}
+  if((remote._v||0)>DB._v){
+    DB=Object.assign({},DB,remote);
+    saveLocal();
+    render();
+  }
+  setSyncStatus('synced');
+}
+async function syncPush(){
+  saveLocal();
+  if(!APP.dbUrl){setSyncStatus('off');return;}
+  setSyncStatus('syncing');
+  DB._v=(DB._v||0)+1;
+  saveLocal();
+  const ok=await fbPut(DB);
+  setSyncStatus(ok?'synced':'error');
+}
+function startPoll(){
+  clearInterval(_pollTimer);
+  _pollTimer=setInterval(syncPull,30000);
+  syncPull();
+}
+async function connectFirebase(url){
+  const clean=url.trim().replace(/\/+$/,'');
+  APP.dbUrl=clean;
+  localStorage.setItem('studio-fb-url',clean);
+  setSyncStatus('syncing');
+  const remote=await fbGet();
+  if(remote===null){APP.dbUrl=null;localStorage.removeItem('studio-fb-url');return false;}
+  if(remote&&(remote._v||0)>0){DB=Object.assign({},DB,remote);saveLocal();}
+  else{await syncPush();}
+  startPoll();
+  return true;
+}
+
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function gbox(id){return S.boxes.find(b=>b.id===id)}
-function gsetup(id){return S.setups.find(s=>s.id===id)}
+function gbox(id){return DB.containers.find(c=>c.id===id)}
+function gmem(id){return DB.members.find(m=>m.id===id)}
+function nextCode(type){
+  const prefix=CT[type]?.prefix||'XX';
+  const nums=DB.containers.filter(c=>c.type===type).map(c=>c.number||0);
+  const max=nums.length?Math.max(...nums):0;
+  return{prefix,number:max+1,code:`${prefix}-${String(max+1).padStart(2,'0')}`};
+}
+function timeAgo(ts){
+  const d=Date.now()-ts;
+  if(d<60000)return'just now';
+  if(d<3600000)return Math.floor(d/60000)+'m ago';
+  if(d<86400000)return Math.floor(d/3600000)+'h ago';
+  return Math.floor(d/86400000)+'d ago';
+}
+function logActivity(text,memberId){
+  const act={id:uid(),text,time:Date.now(),memberId:memberId||APP.currentMember||null};
+  DB.activity.unshift(act);
+  if(DB.activity.length>50)DB.activity=DB.activity.slice(0,50);
+}
 
-// ── Navigation ─────────────────────────────────────────────
+// ═══════════════════════════════════════════
+// CONTAINER CRUD
+// ═══════════════════════════════════════════
+function cContainer(type,name,assignedTo,location){
+  const {number,code}=nextCode(type);
+  const c={id:uid(),type,number,code,name:name||'',assignedTo:assignedTo||null,location:location||'studio',packStatus:'unpacked',items:[],createdAt:Date.now()};
+  DB.containers.unshift(c);
+  const mem=gmem(assignedTo);
+  logActivity(`Created ${code}${name?' "'+name+'"':''}`);
+  syncPush();
+  return c;
+}
+function uContainer(id,name,assignedTo,location){
+  const c=gbox(id);if(!c)return;
+  c.name=name||'';c.assignedTo=assignedTo||null;c.location=location||'studio';
+  logActivity(`Updated ${c.code}`);
+  syncPush();
+}
+function dContainer(id){
+  const c=gbox(id);
+  logActivity(`Deleted ${c?.code}`);
+  DB.containers=DB.containers.filter(x=>x.id!==id);
+  syncPush();
+}
+function setLocation(containerId,loc){
+  const c=gbox(containerId);if(!c)return;
+  c.location=loc;
+  logActivity(`${c.code} moved to ${LOCS[loc]?.label||loc}`);
+  syncPush();
+  render();
+}
+
+// ═══════════════════════════════════════════
+// ITEM CRUD
+// ═══════════════════════════════════════════
+function addItem(containerId,catalogId,name,qty,notes){
+  const c=gbox(containerId);if(!c)return;
+  c.items.push({id:uid(),catalogId:catalogId||null,name,qty:qty||1,notes:notes||'',packed:false});
+  logActivity(`Added "${name}" to ${c.code}`);
+  syncPush();
+}
+function uItem(containerId,itemId,name,qty,notes){
+  const c=gbox(containerId);if(!c)return;
+  const i=c.items.find(x=>x.id===itemId);if(!i)return;
+  i.name=name;i.qty=qty||1;i.notes=notes||'';
+  syncPush();
+}
+function dItem(containerId,itemId){
+  const c=gbox(containerId);if(!c)return;
+  c.items=c.items.filter(x=>x.id!==itemId);
+  syncPush();
+}
+function togglePacked(containerId,itemId){
+  const c=gbox(containerId);if(!c)return;
+  const i=c.items.find(x=>x.id===itemId);if(!i)return;
+  i.packed=!i.packed;
+  const allPacked=c.items.length>0&&c.items.every(x=>x.packed);
+  if(allPacked){c.packStatus='packed';logActivity(`${c.code} fully packed`);}
+  else if(c.items.some(x=>x.packed)){c.packStatus='packing';}
+  else{c.packStatus='unpacked';}
+  syncPush();
+}
+
+// ═══════════════════════════════════════════
+// CATALOG CRUD
+// ═══════════════════════════════════════════
+function addCatalogItem(name,cat){
+  const item={id:uid(),name,cat:cat||'misc'};
+  DB.catalog.push(item);
+  syncPush();
+  return item;
+}
+function dCatalogItem(id){
+  DB.catalog=DB.catalog.filter(x=>x.id!==id);
+  syncPush();
+}
+
+// ═══════════════════════════════════════════
+// TOAST / CONFIRM / MODAL
+// ═══════════════════════════════════════════
+let _tt;
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('on'),2200)}
+function showCf(title,msg,cb){document.getElementById('cf-t').textContent=title;document.getElementById('cf-m').textContent=msg;document.getElementById('cf-ok').onclick=()=>{hideCf();cb()};document.getElementById('cf').classList.add('on')}
+function hideCf(){document.getElementById('cf').classList.remove('on')}
+function showModal(title,html){document.getElementById('mt').textContent=title;document.getElementById('mbd').innerHTML=html;document.getElementById('mo').classList.add('on')}
+function hideModal(){document.getElementById('mo').classList.remove('on')}
+function moClick(e){if(e.target===document.getElementById('mo'))hideModal()}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
 function nav(view,id){
-  S.view=view;
-  if(view==='box-detail')S.boxId=id;
-  if(view==='setup-detail')S.setupId=id;
+  APP.view=view;
+  if(view==='container-detail')APP.containerId=id;
   render();
   document.getElementById('view').scrollTop=0;
 }
-
-// ── Box CRUD ───────────────────────────────────────────────
-function cBox(name,color,loc){S.boxes.unshift({id:uid(),name,color:color||COLORS[0],location:loc||'',items:[],createdAt:Date.now()});save()}
-function uBox(id,name,color,loc){const b=gbox(id);if(!b)return;b.name=name;b.color=color;b.location=loc||'';save()}
-function dBox(id){S.boxes=S.boxes.filter(b=>b.id!==id);save()}
-
-// ── Item CRUD ──────────────────────────────────────────────
-function cItem(boxId,name,notes){const b=gbox(boxId);if(!b)return;b.items.push({id:uid(),name,notes:notes||'',checked:false});save()}
-function uItem(boxId,itemId,name,notes){const b=gbox(boxId);if(!b)return;const i=b.items.find(i=>i.id===itemId);if(!i)return;i.name=name;i.notes=notes||'';save()}
-function dItem(boxId,itemId){const b=gbox(boxId);if(!b)return;b.items=b.items.filter(i=>i.id!==itemId);save()}
-function tItem(boxId,itemId){const b=gbox(boxId);if(!b)return;const i=b.items.find(i=>i.id===itemId);if(!i)return;i.checked=!i.checked;save();render()}
-function mvItem(fromId,itemId,toId){const fb=gbox(fromId);const tb=gbox(toId);if(!fb||!tb)return;const idx=fb.items.findIndex(i=>i.id===itemId);if(idx<0)return;const[item]=fb.items.splice(idx,1);item.checked=false;tb.items.push(item);save()}
-
-// ── Setup CRUD ─────────────────────────────────────────────
-function cSetup(name,desc){S.setups.unshift({id:uid(),name,description:desc||'',items:[],createdAt:Date.now()});save()}
-function uSetup(id,name,desc){const s=gsetup(id);if(!s)return;s.name=name;s.description=desc||'';save()}
-function dSetup(id){S.setups=S.setups.filter(s=>s.id!==id);save()}
-
-// ── Setup Item CRUD ────────────────────────────────────────
-function cSI(sid,name,from){const s=gsetup(sid);if(!s)return;s.items.push({id:uid(),name,fromBox:from||'',checked:false});save()}
-function uSI(sid,iid,name,from){const s=gsetup(sid);if(!s)return;const i=s.items.find(i=>i.id===iid);if(!i)return;i.name=name;i.fromBox=from||'';save()}
-function dSI(sid,iid){const s=gsetup(sid);if(!s)return;s.items=s.items.filter(i=>i.id!==iid);save()}
-function tSI(sid,iid){const s=gsetup(sid);if(!s)return;const i=s.items.find(i=>i.id===iid);if(!i)return;i.checked=!i.checked;save();render()}
-
-// ── Toast ──────────────────────────────────────────────────
-let _tt;
-function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('on');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('on'),2200)}
-
-// ── Confirm ────────────────────────────────────────────────
-function showConf(title,msg,cb){document.getElementById('ctitle').textContent=title;document.getElementById('cmsg').textContent=msg;document.getElementById('cok').onclick=()=>{hideConf();cb()};document.getElementById('conf').classList.add('on')}
-function hideConf(){document.getElementById('conf').classList.remove('on')}
-
-// ── Modal ──────────────────────────────────────────────────
-function showModal(title,html){document.getElementById('mtitle').textContent=title;document.getElementById('mbody').innerHTML=html;document.getElementById('moverlay').classList.add('on')}
-function hideModal(){document.getElementById('moverlay').classList.remove('on')}
-function overlayClick(e){if(e.target===document.getElementById('moverlay'))hideModal()}
-
-// ── Color picker state ─────────────────────────────────────
-let _col=COLORS[0];
-function selCol(c){_col=c;document.querySelectorAll('.copt').forEach(el=>el.classList.toggle('sel',el.dataset.c===c))}
-function cgrid(sel){return`<div class="cgrid">${COLORS.map(c=>`<div class="copt${c===sel?' sel':''}" data-c="${c}" style="background:${c}" onclick="selCol('${c}')"></div>`).join('')}</div>`}
-
-// ── FAB ────────────────────────────────────────────────────
 function handleFab(){
-  if(S.view==='boxes')showCBox();
-  else if(S.view==='box-detail')showCItem(S.boxId);
-  else if(S.view==='setups')showCSetup();
-  else if(S.view==='setup-detail')showCSI(S.setupId);
+  if(APP.view==='containers')showCreateContainerModal();
+  else if(APP.view==='container-detail')showAddItemModal(APP.containerId);
+  else if(APP.view==='catalog')showAddCatalogModal();
 }
 
-// ── Box modals ─────────────────────────────────────────────
-function showCBox(){
-  _col=COLORS[0];
-  showModal('NEW BOX',`
-    <div class="fg"><label class="fl">Box Name</label><input class="fi" id="f-bn" placeholder="e.g. Drum Mics" maxlength="60"></div>
-    <div class="fg"><label class="fl">Location</label><input class="fi" id="f-bl" placeholder="e.g. Shelf A" maxlength="60"></div>
-    <div class="fg"><label class="fl">Color Tag</label>${cgrid(_col)}</div>
-    <button class="btn btn-p" onclick="subCBox()">Create Box</button>`);
-  setTimeout(()=>document.getElementById('f-bn')?.focus(),80);
+// ═══════════════════════════════════════════
+// PACK MODE
+// ═══════════════════════════════════════════
+function enterPack(containerId){
+  APP.packContainerId=containerId;
+  renderPackScreen();
+  document.getElementById('pack-screen').classList.add('on');
 }
-function subCBox(){const n=document.getElementById('f-bn')?.value.trim();if(!n){toast('Box name required');return}cBox(n,_col,document.getElementById('f-bl')?.value.trim());hideModal();toast('Box created');nav('boxes')}
-
-function showEBox(id){
-  const b=gbox(id);if(!b)return;_col=b.color;
-  showModal('EDIT BOX',`
-    <div class="fg"><label class="fl">Box Name</label><input class="fi" id="f-bn" value="${esc(b.name)}" maxlength="60"></div>
-    <div class="fg"><label class="fl">Location</label><input class="fi" id="f-bl" value="${esc(b.location)}" placeholder="e.g. Shelf A" maxlength="60"></div>
-    <div class="fg"><label class="fl">Color Tag</label>${cgrid(_col)}</div>
-    <button class="btn btn-p" onclick="subEBox('${id}')">Save Changes</button>`);
+function exitPack(){
+  document.getElementById('pack-screen').classList.remove('on');
+  APP.packContainerId=null;
+  render();
 }
-function subEBox(id){const n=document.getElementById('f-bn')?.value.trim();if(!n){toast('Name required');return}uBox(id,n,_col,document.getElementById('f-bl')?.value.trim());hideModal();toast('Box updated');render()}
+function renderPackScreen(){
+  const c=gbox(APP.packContainerId);if(!c)return;
+  document.getElementById('pack-title').textContent=c.code+(c.name?' — '+c.name:'');
+  const packed=c.items.filter(i=>i.packed).length;
+  const total=c.items.length;
+  const pct=total?Math.round(packed/total*100):0;
+  document.getElementById('pack-prog-fill').style.width=pct+'%';
+  document.getElementById('pack-prog-txt').textContent=`${packed} / ${total} packed`;
+  document.getElementById('pack-prog-pct').textContent=pct+'%';
+  if(!c.items.length){
+    document.getElementById('pack-body').innerHTML='<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Add items to this container first.</p></div>';
+    return;
+  }
+  document.getElementById('pack-body').innerHTML=c.items.map(i=>`
+    <div class="irow">
+      <div class="pick${i.packed?' on':''}" style="${i.packed?'background:var(--acc);border-color:var(--acc)':''}" onclick="packToggle('${c.id}','${i.id}')">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="ib">
+        <div class="in${i.packed?' x':''}" style="font-size:14px">${esc(i.name)}</div>
+        ${i.qty>1?`<div class="iqty">QTY: ${i.qty}</div>`:''}
+        ${i.notes?`<div class="inotes">${esc(i.notes)}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+function packToggle(cid,iid){
+  togglePacked(cid,iid);
+  renderPackScreen();
+}
+function packReset(){
+  const c=gbox(APP.packContainerId);if(!c)return;
+  c.items.forEach(i=>i.packed=false);
+  c.packStatus='unpacked';
+  syncPush();
+  renderPackScreen();
+  toast('Pack list reset');
+}
+function packDone(){
+  const c=gbox(APP.packContainerId);if(!c)return;
+  const packed=c.items.filter(i=>i.packed).length;
+  const total=c.items.length;
+  if(packed<total){
+    showCf('Mark as Packed?',`${total-packed} item(s) not yet checked. Mark ${c.code} as packed anyway?`,()=>{
+      c.packStatus='packed';
+      c.items.forEach(i=>i.packed=true);
+      logActivity(`${c.code} packed (${total} items)`);
+      syncPush();
+      exitPack();
+      toast(`${c.code} marked as packed`);
+    });
+    document.getElementById('cf').classList.add('on');
+  } else {
+    c.packStatus='packed';
+    logActivity(`${c.code} packed (${total} items)`);
+    syncPush();
+    exitPack();
+    toast(`${c.code} packed!`);
+  }
+}
 
-// ── Item modals ────────────────────────────────────────────
-function showCItem(boxId){
+// ═══════════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════════
+function showCreateContainerModal(){
+  _selType='sc';
+  const {code}=nextCode('sc');
+  showModal('NEW CONTAINER',`
+    <div class="fg">
+      <label class="fl">Container Type</label>
+      <div class="type-grid">
+        ${Object.entries(CT).map(([k,v])=>`<div class="type-opt${k==='sc'?' sel':''}" style="${k==='sc'?`border-color:${v.color}`:'color:var(--mut)'}" id="to-${k}" onclick="selType('${k}')">
+          <div class="type-opt-label" style="color:${v.color}">${v.label}</div>
+          <div class="type-opt-code" id="code-preview-${k}">${nextCode(k).code}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Custom Name (optional)</label><input class="fi" id="f-cn" placeholder="e.g. John's Main Kit" maxlength="60"></div>
+    <div class="fg"><label class="fl">Assigned To</label>
+      <select class="fi" id="f-ca">
+        <option value="">— Unassigned —</option>
+        ${DB.members.map(m=>`<option value="${m.id}">${esc(m.name)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fg"><label class="fl">Starting Location</label>
+      <select class="fi" id="f-cl">
+        ${Object.entries(LOCS).map(([k,v])=>`<option value="${k}">${v.icon} ${v.label}</option>`).join('')}
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="subCreateContainer()">Create Container</button>`);
+}
+function selType(t){
+  _selType=t;
+  Object.keys(CT).forEach(k=>{
+    const el=document.getElementById('to-'+k);
+    if(!el)return;
+    el.style.borderColor=k===t?CT[k].color:getComputedStyle(document.documentElement).getPropertyValue('--b');
+    el.className='type-opt'+(k===t?' sel':'');
+  });
+}
+function subCreateContainer(){
+  const name=(document.getElementById('f-cn')?.value||'').trim();
+  const assignedTo=document.getElementById('f-ca')?.value||null;
+  const location=document.getElementById('f-cl')?.value||'studio';
+  cContainer(_selType,name,assignedTo,location);
+  hideModal();toast('Container created');nav('containers');
+}
+
+function showEditContainerModal(id){
+  const c=gbox(id);if(!c)return;
+  showModal('EDIT CONTAINER',`
+    <div style="margin-bottom:12px"><span class="badge badge-${c.type}" style="font-size:11px">${c.code}</span></div>
+    <div class="fg"><label class="fl">Custom Name</label><input class="fi" id="f-cn" value="${esc(c.name)}" maxlength="60"></div>
+    <div class="fg"><label class="fl">Assigned To</label>
+      <select class="fi" id="f-ca">
+        <option value="">— Unassigned —</option>
+        ${DB.members.map(m=>`<option value="${m.id}"${c.assignedTo===m.id?' selected':''}>${esc(m.name)}</option>`).join('')}
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="subEditContainer('${id}')">Save Changes</button>
+    <button class="btn btn-d" onclick="confirmDeleteContainer('${id}')">Delete Container</button>`);
+}
+function subEditContainer(id){
+  const name=(document.getElementById('f-cn')?.value||'').trim();
+  const assignedTo=document.getElementById('f-ca')?.value||null;
+  const c=gbox(id);
+  uContainer(id,name,assignedTo,c?.location||'studio');
+  hideModal();toast('Container updated');render();
+}
+function confirmDeleteContainer(id){
+  const c=gbox(id);
+  hideModal();
+  showCf('Delete Container',`Delete ${c?.code}${c?.name?' "'+c.name+'"':''}? All items inside will be removed.`,()=>{
+    dContainer(id);toast('Container deleted');nav('containers');
+  });
+}
+
+// Add item modal
+function showAddItemModal(containerId){
+  _addItemCatId=null;_addItemQty=1;
+  const cats=Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
   showModal('ADD ITEM',`
-    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-in" placeholder="e.g. SM57" maxlength="80"></div>
-    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-io" placeholder="e.g. Silver body, works great"></textarea></div>
-    <button class="btn btn-p" onclick="subCItem('${boxId}')">Add Item</button>`);
-  setTimeout(()=>document.getElementById('f-in')?.focus(),80);
+    <div class="fg">
+      <label class="fl">Search Catalog</label>
+      <input class="fi" id="f-ais" placeholder="Type to search items…" oninput="filterCatalogItems()" autocomplete="off">
+      <div class="cat-list" id="cat-item-list">${renderCatalogItemList('')}</div>
+      <div id="selected-item-label" style="font-size:11px;color:var(--acc);margin-top:6px;min-height:16px"></div>
+    </div>
+    <div id="new-item-form" style="display:none">
+      <div class="fg"><label class="fl">Or Create New Item</label><input class="fi" id="f-nin" placeholder="Item name" maxlength="80"></div>
+      <div class="fg"><label class="fl">Category</label><select class="fi" id="f-ncat">${cats}</select></div>
+    </div>
+    <div class="fg"><label class="fl">Quantity</label>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="adjQty(-1)">−</button>
+        <input class="qty-val" id="f-qty" type="number" min="1" value="1" oninput="_addItemQty=parseInt(this.value)||1">
+        <button class="qty-btn" onclick="adjQty(1)">+</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-inotes" placeholder="e.g. 3m, black tape"></textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-g btn-sm" onclick="toggleNewItemForm()">+ New Item</button>
+    </div>
+    <button class="btn btn-p" style="margin-top:10px" onclick="subAddItem('${containerId}')">Add to Container</button>`);
+  setTimeout(()=>document.getElementById('f-ais')?.focus(),80);
 }
-function subCItem(boxId){const n=document.getElementById('f-in')?.value.trim();if(!n){toast('Name required');return}cItem(boxId,n,document.getElementById('f-io')?.value.trim());hideModal();toast('Item added');render()}
+function renderCatalogItemList(q){
+  const all=DB.catalog.filter(c=>!q||c.name.toLowerCase().includes(q.toLowerCase())).slice(0,30);
+  if(!all.length)return`<div style="padding:12px;text-align:center;font-size:11px;color:var(--mut)">No matches. Use "+ New Item" to add.</div>`;
+  return all.map(c=>`<div class="cat-item${_addItemCatId===c.id?' sel-item':''}" onclick="selectCatItem('${c.id}','${esc(c.name)}')">
+    <div class="cat-item-n">${esc(c.name)}</div>
+    <div class="cat-item-c cat-${c.cat}">${CATS[c.cat]?.label||c.cat}</div>
+  </div>`).join('');
+}
+function filterCatalogItems(){
+  const q=document.getElementById('f-ais')?.value||'';
+  const el=document.getElementById('cat-item-list');
+  if(el)el.innerHTML=renderCatalogItemList(q);
+}
+function selectCatItem(id,name){
+  _addItemCatId=id;
+  document.querySelectorAll('.cat-item').forEach(el=>el.classList.remove('sel-item'));
+  document.querySelectorAll('.cat-item').forEach(el=>{if(el.onclick?.toString().includes(id))el.classList.add('sel-item')});
+  const lbl=document.getElementById('selected-item-label');
+  if(lbl)lbl.textContent='Selected: '+name;
+  document.getElementById('new-item-form').style.display='none';
+}
+function toggleNewItemForm(){
+  const f=document.getElementById('new-item-form');
+  if(f)f.style.display=f.style.display==='none'?'block':'none';
+  _addItemCatId=null;
+  const lbl=document.getElementById('selected-item-label');
+  if(lbl)lbl.textContent='';
+}
+function adjQty(d){
+  _addItemQty=Math.max(1,(_addItemQty||1)+d);
+  const el=document.getElementById('f-qty');
+  if(el)el.value=_addItemQty;
+}
+function subAddItem(containerId){
+  let name='';let catId=_addItemCatId;
+  const newForm=document.getElementById('new-item-form');
+  if(newForm&&newForm.style.display!=='none'){
+    name=(document.getElementById('f-nin')?.value||'').trim();
+    if(!name){toast('Item name required');return;}
+    const cat=document.getElementById('f-ncat')?.value||'misc';
+    const ci=addCatalogItem(name,cat);
+    catId=ci.id;
+  } else {
+    if(!catId){toast('Select an item from the catalog');return;}
+    const ci=DB.catalog.find(c=>c.id===catId);
+    name=ci?.name||'';
+  }
+  const notes=(document.getElementById('f-inotes')?.value||'').trim();
+  addItem(containerId,catId,name,_addItemQty,notes);
+  hideModal();toast('Item added');render();
+}
 
-function showEItem(boxId,itemId){
-  const b=gbox(boxId);const i=b?.items.find(x=>x.id===itemId);if(!i)return;
+function showEditItemModal(containerId,itemId){
+  const c=gbox(containerId);const i=c?.items.find(x=>x.id===itemId);if(!i)return;
   showModal('EDIT ITEM',`
-    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-in" value="${esc(i.name)}" maxlength="80"></div>
-    <div class="fg"><label class="fl">Notes (optional)</label><textarea class="fi" id="f-io">${esc(i.notes)}</textarea></div>
-    <button class="btn btn-p" onclick="subEItem('${boxId}','${itemId}')">Save Changes</button>`);
+    <div class="fg"><label class="fl">Name</label><input class="fi" id="f-in" value="${esc(i.name)}" maxlength="80"></div>
+    <div class="fg"><label class="fl">Quantity</label>
+      <div class="qty-row">
+        <button class="qty-btn" onclick="adjQty(-1)">−</button>
+        <input class="qty-val" id="f-qty" type="number" min="1" value="${i.qty||1}" oninput="_addItemQty=parseInt(this.value)||1">
+        <button class="qty-btn" onclick="adjQty(1)">+</button>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><textarea class="fi" id="f-inotes">${esc(i.notes)}</textarea></div>
+    <button class="btn btn-p" onclick="subEditItem('${containerId}','${itemId}')">Save Changes</button>`);
+  _addItemQty=i.qty||1;
 }
-function subEItem(boxId,itemId){const n=document.getElementById('f-in')?.value.trim();if(!n){toast('Name required');return}uItem(boxId,itemId,n,document.getElementById('f-io')?.value.trim());hideModal();toast('Item updated');render()}
-
-function showMvItem(boxId,itemId){
-  const others=S.boxes.filter(b=>b.id!==boxId);
-  if(!others.length){toast('No other boxes');return}
-  showModal('MOVE ITEM',`
-    <div class="fg"><label class="fl">Move to Box</label><select class="fi" id="f-mt">${others.map(b=>`<option value="${esc(b.id)}">${esc(b.name)}</option>`).join('')}</select></div>
-    <button class="btn btn-p" onclick="subMvItem('${boxId}','${itemId}')">Move Item</button>`);
+function subEditItem(cid,iid){
+  const name=(document.getElementById('f-in')?.value||'').trim();
+  if(!name){toast('Name required');return;}
+  const notes=(document.getElementById('f-inotes')?.value||'').trim();
+  uItem(cid,iid,name,_addItemQty,notes);
+  hideModal();toast('Item updated');render();
 }
-function subMvItem(fromId,itemId){const toId=document.getElementById('f-mt')?.value;const tb=gbox(toId);mvItem(fromId,itemId,toId);hideModal();toast(`Moved to "${tb?.name}"`);render()}
 
-// ── Setup modals ───────────────────────────────────────────
-function showCSetup(){
-  showModal('NEW SETUP',`
-    <div class="fg"><label class="fl">Setup Name</label><input class="fi" id="f-sn" placeholder="e.g. Live Drum Recording" maxlength="80"></div>
-    <div class="fg"><label class="fl">Description (optional)</label><textarea class="fi" id="f-sd" placeholder="e.g. Full kit, 8 mics"></textarea></div>
-    <button class="btn btn-p" onclick="subCSetup()">Create Setup</button>`);
-  setTimeout(()=>document.getElementById('f-sn')?.focus(),80);
+function showAddCatalogModal(){
+  const cats=Object.entries(CATS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join('');
+  showModal('NEW CATALOG ITEM',`
+    <div class="fg"><label class="fl">Item Name</label><input class="fi" id="f-cin" placeholder="e.g. SM57 Dynamic Mic" maxlength="80" autofocus></div>
+    <div class="fg"><label class="fl">Category</label><select class="fi" id="f-ccat">${cats}</select></div>
+    <button class="btn btn-p" onclick="subAddCatalog()">Add to Catalog</button>`);
+  setTimeout(()=>document.getElementById('f-cin')?.focus(),80);
 }
-function subCSetup(){const n=document.getElementById('f-sn')?.value.trim();if(!n){toast('Name required');return}cSetup(n,document.getElementById('f-sd')?.value.trim());hideModal();toast('Setup created');nav('setups')}
-
-function showESetup(id){
-  const s=gsetup(id);if(!s)return;
-  showModal('EDIT SETUP',`
-    <div class="fg"><label class="fl">Setup Name</label><input class="fi" id="f-sn" value="${esc(s.name)}" maxlength="80"></div>
-    <div class="fg"><label class="fl">Description (optional)</label><textarea class="fi" id="f-sd">${esc(s.description)}</textarea></div>
-    <button class="btn btn-p" onclick="subESetup('${id}')">Save Changes</button>`);
+function subAddCatalog(){
+  const name=(document.getElementById('f-cin')?.value||'').trim();
+  if(!name){toast('Name required');return;}
+  const cat=document.getElementById('f-ccat')?.value||'misc';
+  addCatalogItem(name,cat);
+  hideModal();toast('Added to catalog');render();
 }
-function subESetup(id){const n=document.getElementById('f-sn')?.value.trim();if(!n){toast('Name required');return}uSetup(id,n,document.getElementById('f-sd')?.value.trim());hideModal();toast('Setup updated');render()}
 
-// ── Setup Item modals ──────────────────────────────────────
-function showCSI(sid){
-  showModal('ADD GEAR',`
-    <div class="fg"><label class="fl">Gear Name</label><input class="fi" id="f-gin" placeholder="e.g. SM57" maxlength="80"></div>
-    <div class="fg"><label class="fl">From Box / Location</label><input class="fi" id="f-gfb" placeholder="e.g. Mic Box — Shelf A" maxlength="80"></div>
-    <button class="btn btn-p" onclick="subCSI('${sid}')">Add Gear</button>`);
-  setTimeout(()=>document.getElementById('f-gin')?.focus(),80);
+// Settings modal
+function showSettings(){
+  const mcolors=MCOLORS.map(c=>`<div class="csw${DB.members[0]?.color===c?' sel':''}" style="background:${c}" data-c="${c}"></div>`).join('');
+  showModal('SETTINGS',`
+    <div class="fg"><label class="fl">Band / Studio Name</label><input class="fi" id="s-band" value="${esc(DB.bandName)}" maxlength="40"></div>
+    <div class="setup-divider"></div>
+    <div class="lbl" style="padding:0 0 8px">Members</div>
+    ${DB.members.map((m,i)=>`
+      <div class="fg" style="display:flex;gap:8px;align-items:center">
+        <div style="width:14px;height:14px;border-radius:50%;background:${m.color};flex-shrink:0"></div>
+        <input class="fi" id="s-m${i+1}" value="${esc(m.name)}" maxlength="30" placeholder="Member ${i+1}" style="flex:1">
+        <select class="fi" id="s-mc${i+1}" style="width:80px">
+          ${MCOLORS.map(c=>`<option value="${c}"${m.color===c?' selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>`).join('')}
+    <div class="setup-divider"></div>
+    <div class="fg"><label class="fl">Firebase Database URL</label>
+      <input class="fi" id="s-fb" value="${esc(APP.dbUrl||'')}" placeholder="https://project-rtdb.firebaseio.com"></div>
+    <button class="btn btn-p" onclick="subSettings()">Save Settings</button>
+    <button class="btn btn-d" style="margin-top:8px" onclick="showCf('Clear All Data','This will wipe all containers and catalog data. Cannot be undone.',()=>{clearAll()})">Clear All Data</button>`);
 }
-function subCSI(sid){const n=document.getElementById('f-gin')?.value.trim();if(!n){toast('Name required');return}cSI(sid,n,document.getElementById('f-gfb')?.value.trim());hideModal();toast('Gear added');render()}
-
-function showESI(sid,iid){
-  const s=gsetup(sid);const i=s?.items.find(x=>x.id===iid);if(!i)return;
-  showModal('EDIT GEAR',`
-    <div class="fg"><label class="fl">Gear Name</label><input class="fi" id="f-gin" value="${esc(i.name)}" maxlength="80"></div>
-    <div class="fg"><label class="fl">From Box / Location</label><input class="fi" id="f-gfb" value="${esc(i.fromBox)}" maxlength="80"></div>
-    <button class="btn btn-p" onclick="subESI('${sid}','${iid}')">Save Changes</button>`);
+async function subSettings(){
+  DB.bandName=(document.getElementById('s-band')?.value||'The Studio').trim();
+  DB.members.forEach((m,i)=>{
+    m.name=(document.getElementById(`s-m${i+1}`)?.value||`Member ${i+1}`).trim();
+    m.color=document.getElementById(`s-mc${i+1}`)?.value||m.color;
+  });
+  const fbUrl=(document.getElementById('s-fb')?.value||'').trim();
+  if(fbUrl&&fbUrl!==APP.dbUrl){
+    const ok=await connectFirebase(fbUrl);
+    if(!ok){toast('Could not connect to Firebase — check the URL');return;}
+    toast('Firebase connected!');
+  }
+  syncPush();
+  hideModal();toast('Settings saved');render();
 }
-function subESI(sid,iid){const n=document.getElementById('f-gin')?.value.trim();if(!n){toast('Name required');return}uSI(sid,iid,n,document.getElementById('f-gfb')?.value.trim());hideModal();toast('Gear updated');render()}
+function clearAll(){
+  DB.containers=[];DB.catalog=[];DB.activity=[];DB._v=0;
+  if(DB.catalog.length===0)DB.catalog=[...SEED];
+  saveLocal();syncPush();render();toast('Data cleared');
+}
 
-// ── Delete confirms ────────────────────────────────────────
-function confDelBox(id){const b=gbox(id);showConf('Delete Box',`Delete "${b?.name}" and all its items? Cannot be undone.`,()=>{dBox(id);toast('Box deleted');nav('boxes')})}
-function confDelItem(boxId,itemId){const b=gbox(boxId);const i=b?.items.find(x=>x.id===itemId);showConf('Delete Item',`Delete "${i?.name}"?`,()=>{dItem(boxId,itemId);toast('Item deleted');render()})}
-function confDelSetup(id){const s=gsetup(id);showConf('Delete Setup',`Delete "${s?.name}" and its checklist? Cannot be undone.`,()=>{dSetup(id);toast('Setup deleted');nav('setups')})}
-function confDelSI(sid,iid){const s=gsetup(sid);const i=s?.items.find(x=>x.id===iid);showConf('Delete Gear',`Delete "${i?.name}"?`,()=>{dSI(sid,iid);toast('Gear deleted');render()})}
-
-// ── Render ─────────────────────────────────────────────────
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
 function render(){
   // Nav highlight
   document.querySelectorAll('.nb').forEach(b=>{
     const t=b.dataset.tab;
-    b.classList.toggle('on',t===S.view||(t==='boxes'&&S.view==='box-detail')||(t==='setups'&&S.view==='setup-detail'));
+    b.classList.toggle('on',t===APP.view||(t==='containers'&&APP.view==='container-detail'));
   });
   // FAB
   const fab=document.getElementById('fab');
-  fab.classList.toggle('hide',!['boxes','box-detail','setups','setup-detail'].includes(S.view));
-  // View
+  const showFab=['containers','container-detail','catalog'].includes(APP.view);
+  fab.classList.toggle('hide',!showFab);
+
   const el=document.getElementById('view');
-  if(S.view==='home')el.innerHTML=vHome();
-  else if(S.view==='boxes')el.innerHTML=vBoxes();
-  else if(S.view==='box-detail')el.innerHTML=vBoxDetail();
-  else if(S.view==='setups')el.innerHTML=vSetups();
-  else if(S.view==='setup-detail')el.innerHTML=vSetupDetail();
-  else if(S.view==='search')el.innerHTML=vSearch();
-  // Search input wiring
-  if(S.view==='search'){
-    const si=document.getElementById('si');
-    if(si){si.value=S.q;si.addEventListener('input',e=>{S.q=e.target.value;document.getElementById('sr').innerHTML=vSearchResults()});setTimeout(()=>si.focus(),80)}
-  }
+  if(APP.view==='setup')el.innerHTML=vSetup();
+  else if(APP.view==='home')el.innerHTML=vHome();
+  else if(APP.view==='containers')el.innerHTML=vContainers();
+  else if(APP.view==='container-detail')el.innerHTML=vContainerDetail();
+  else if(APP.view==='catalog')el.innerHTML=vCatalog();
+  else if(APP.view==='search'){el.innerHTML=vSearch();wireSearch();}
+
+  if(APP.view==='setup')return;
+  setSyncStatus(APP.syncStatus);
 }
 
-// ── Home ───────────────────────────────────────────────────
-function vHome(){
-  const tb=S.boxes.length,ti=S.boxes.reduce((a,b)=>a+b.items.length,0),ts=S.setups.length;
-  const rb=S.boxes.slice(0,3),rs=S.setups.slice(0,3);
-  const chk=svg=>svg;
-  let h=`<div class="ph"><div class="ph-title">Studio Inventory</div><div class="ph-sub">Your gear, organized.</div></div>
-  <div class="stats">
-    <div class="stat"><div class="stat-n">${tb}</div><div class="stat-l">Boxes</div></div>
-    <div class="stat"><div class="stat-n">${ti}</div><div class="stat-l">Items</div></div>
-    <div class="stat"><div class="stat-n">${ts}</div><div class="stat-l">Setups</div></div>
+// ═══════════════════════════════════════════
+// SETUP VIEW
+// ═══════════════════════════════════════════
+function vSetup(){
+  document.getElementById('bnav').style.display='none';
+  document.getElementById('fab').style.display='none';
+  document.getElementById('sync').style.display='none';
+  return`<div class="setup-screen">
+    <div class="setup-logo">STUDIO INVENTORY</div>
+    <div class="setup-sub">Connect your cloud database to share data across all band members.</div>
+
+    <div class="lbl" style="padding:0 0 10px">Connect Firebase (free)</div>
+    <div class="setup-step"><div class="setup-step-n">1</div><div class="setup-step-t">Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> and sign in with Google.</div></div>
+    <div class="setup-step"><div class="setup-step-n">2</div><div class="setup-step-t">Click <strong>Add project</strong> → give it any name → Create project.</div></div>
+    <div class="setup-step"><div class="setup-step-n">3</div><div class="setup-step-t">In the left menu click <strong>Build → Realtime Database → Create database → Start in test mode</strong>.</div></div>
+    <div class="setup-step"><div class="setup-step-n">4</div><div class="setup-step-t">Copy the URL shown (looks like <em>https://your-project-default-rtdb.firebaseio.com</em>).</div></div>
+    <div class="setup-step"><div class="setup-step-n">5</div><div class="setup-step-t">Paste it below and tap Connect.</div></div>
+
+    <div class="setup-divider"></div>
+    <div class="fg"><input class="fi" id="setup-fb-url" placeholder="https://your-project-default-rtdb.firebaseio.com" style="font-size:12px"></div>
+    <button class="btn btn-p" onclick="setupConnect()">Connect Database</button>
+    <button class="btn btn-g" onclick="setupSkip()" style="margin-top:8px">Skip — use this device only</button>
   </div>`;
-  if(!tb&&!ts){
-    h+=`<div class="empty"><div class="ico">📦</div><h3>Nothing here yet</h3><p>Tap <strong>Boxes</strong> to start organizing gear into labeled boxes, or <strong>Setups</strong> to build a session checklist.</p></div>`;
-  } else {
-    if(rb.length){
-      h+=`<div class="lbl">Recent Boxes</div>`;
-      h+=rb.map(b=>{const ck=b.items.filter(i=>i.checked).length,tot=b.items.length;return`<div class="card cb" style="border-left-color:${b.color}" onclick="nav('box-detail','${b.id}')"><div class="ct">${esc(b.name)}</div><div class="cs"><span class="dot" style="background:${b.color}"></span>${b.location?`<span>${esc(b.location)}</span>`:''}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot}</span></div></div>`}).join('');
-    }
-    if(rs.length){
-      h+=`<div class="lbl">Recent Setups</div>`;
-      h+=rs.map(s=>{const ck=s.items.filter(i=>i.checked).length,tot=s.items.length;return`<div class="card" onclick="nav('setup-detail','${s.id}')"><div class="ct">${esc(s.name)}</div><div class="cs">${s.description?`<span>${esc(s.description)}</span>`:''}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot} ready</span></div></div>`}).join('');
-    }
-  }
-  return h;
+}
+async function setupConnect(){
+  const url=(document.getElementById('setup-fb-url')?.value||'').trim();
+  if(!url){toast('Paste your Firebase Database URL');return;}
+  const btn=document.querySelector('#view .btn-p');
+  if(btn){btn.textContent='Connecting…';btn.disabled=true;}
+  const ok=await connectFirebase(url);
+  if(!ok){toast('Connection failed — check the URL and try again');if(btn){btn.textContent='Connect Database';btn.disabled=false;}return;}
+  finishSetup();
+}
+function setupSkip(){finishSetup();}
+function finishSetup(){
+  // Seed catalog if empty
+  if(!DB.catalog.length){DB.catalog=[...SEED];syncPush();}
+  localStorage.setItem('studio-ready','1');
+  APP.view='home';
+  document.getElementById('bnav').style.display='flex';
+  document.getElementById('fab').style.display='flex';
+  document.getElementById('sync').style.display='';
+  render();
+  toast('Welcome to Studio Inventory!');
 }
 
-// ── Boxes list ─────────────────────────────────────────────
-function vBoxes(){
-  if(!S.boxes.length)return`<div class="ph"><div class="ph-title">Boxes</div><div class="ph-sub">Organize gear into labeled boxes</div></div><div class="empty"><div class="ico">📦</div><h3>No boxes yet</h3><p>Tap + to create your first box and start adding gear.</p></div>`;
-  let h=`<div class="ph"><div class="ph-title">Boxes</div><div class="ph-sub">${S.boxes.length} box${S.boxes.length===1?'':'es'}</div></div>`;
-  h+=S.boxes.map(b=>{const ck=b.items.filter(i=>i.checked).length,tot=b.items.length;return`<div class="card cb" style="border-left-color:${b.color}" onclick="nav('box-detail','${b.id}')"><div class="ct">${esc(b.name)}</div><div class="cs"><span class="dot" style="background:${b.color}"></span>${b.location?`<span>${esc(b.location)}</span>`:`<span style="color:var(--muted)">No location</span>`}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot}</span></div></div>`}).join('');
-  return h;
-}
+// ═══════════════════════════════════════════
+// HOME VIEW
+// ═══════════════════════════════════════════
+function vHome(){
+  const mem=gmem(APP.currentMember);
+  const locCounts={studio:0,gig:0,transit:0};
+  DB.containers.forEach(c=>locCounts[c.location]=(locCounts[c.location]||0)+1);
+  const totalItems=DB.containers.reduce((a,c)=>a+c.items.length,0);
+  const packed=DB.containers.filter(c=>c.packStatus==='packed').length;
 
-// ── Box detail ─────────────────────────────────────────────
-function vBoxDetail(){
-  const b=gbox(S.boxId);if(!b){nav('boxes');return''}
-  const ck=b.items.filter(i=>i.checked).length,tot=b.items.length,pct=tot>0?Math.round(ck/tot*100):0;
-  let h=`<div class="dh">
-    <button class="back" onclick="nav('boxes')">←</button>
-    <div class="dh-body">
-      <div class="dh-title">${esc(b.name)}</div>
-      <div class="dh-sub"><span class="dot" style="background:${b.color}"></span>${b.location?esc(b.location):'No location'}</div>
-      ${tot>0?`<div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:${b.color}"></div></div><div class="prog-txt"><span>${ck} checked</span><span>${pct}%</span></div></div>`:''}
-    </div>
-    <div class="dh-acts">
-      <button class="ibtn" onclick="showEBox('${b.id}')">✏️</button>
-      <button class="ibtn" onclick="confDelBox('${b.id}')">🗑️</button>
-    </div>
-  </div><div class="items-sec">`;
-  if(!b.items.length){
-    h+=`<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Tap + to add gear to this box.</p></div>`;
-  } else {
-    h+=b.items.map(i=>`<div class="irow">
-      <div class="ichk${i.checked?' on':''}" style="${i.checked?`background:${b.color};border-color:${b.color}`:''}" onclick="tItem('${b.id}','${i.id}')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div class="ibody"><div class="iname${i.checked?' strike':''}">${esc(i.name)}</div>${i.notes?`<div class="inotes">${esc(i.notes)}</div>`:''}</div>
-      <div class="iacts">
-        <button class="ibtn" title="Move" onclick="showMvItem('${b.id}','${i.id}')">↗️</button>
-        <button class="ibtn" title="Edit" onclick="showEItem('${b.id}','${i.id}')">✏️</button>
-        <button class="ibtn" title="Delete" onclick="confDelItem('${b.id}','${i.id}')">🗑️</button>
+  return`
+    <div class="ph">
+      <div class="ph-l">
+        <div class="pt" style="margin:0">${esc(DB.bandName)}</div>
+        <div class="ps">Studio Inventory</div>
       </div>
-    </div>`).join('');
-  }
-  return h+'</div>';
-}
-
-// ── Setups list ────────────────────────────────────────────
-function vSetups(){
-  if(!S.setups.length)return`<div class="ph"><div class="ph-title">Setups</div><div class="ph-sub">Gear checklists for sessions</div></div><div class="empty"><div class="ico">🎛️</div><h3>No setups yet</h3><p>Tap + to create a gear checklist for a recording session.</p></div>`;
-  let h=`<div class="ph"><div class="ph-title">Setups</div><div class="ph-sub">${S.setups.length} setup${S.setups.length===1?'':'s'}</div></div>`;
-  h+=S.setups.map(s=>{const ck=s.items.filter(i=>i.checked).length,tot=s.items.length,pct=tot>0?Math.round(ck/tot*100):0;return`<div class="card" onclick="nav('setup-detail','${s.id}')"><div class="ct">${esc(s.name)}</div><div class="cs">${s.description?`<span>${esc(s.description)}</span>`:''}<span class="badge${ck===tot&&tot>0?' ok':''}">${ck}/${tot} ready</span></div>${tot>0?`<div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:var(--acc)"></div></div></div>`:''}</div>`}).join('');
-  return h;
-}
-
-// ── Setup detail ───────────────────────────────────────────
-function vSetupDetail(){
-  const s=gsetup(S.setupId);if(!s){nav('setups');return''}
-  const ck=s.items.filter(i=>i.checked).length,tot=s.items.length,pct=tot>0?Math.round(ck/tot*100):0;
-  let h=`<div class="dh">
-    <button class="back" onclick="nav('setups')">←</button>
-    <div class="dh-body">
-      <div class="dh-title">${esc(s.name)}</div>
-      ${s.description?`<div class="dh-sub">${esc(s.description)}</div>`:''}
-      ${tot>0?`<div class="prog-wrap"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:var(--acc)"></div></div><div class="prog-txt"><span>${ck} ready</span><span>${pct}%</span></div></div>`:''}
-    </div>
-    <div class="dh-acts">
-      <button class="ibtn" onclick="showESetup('${s.id}')">✏️</button>
-      <button class="ibtn" onclick="confDelSetup('${s.id}')">🗑️</button>
-    </div>
-  </div><div class="items-sec">`;
-  if(!s.items.length){
-    h+=`<div class="empty"><div class="ico">📋</div><h3>No gear</h3><p>Tap + to add gear to this setup.</p></div>`;
-  } else {
-    h+=s.items.map(i=>`<div class="irow">
-      <div class="ichk${i.checked?' on':''}" style="${i.checked?'background:var(--acc);border-color:var(--acc)':''}" onclick="tSI('${s.id}','${i.id}')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <div class="ibody"><div class="iname${i.checked?' strike':''}">${esc(i.name)}</div>${i.fromBox?`<div class="inotes">📦 ${esc(i.fromBox)}</div>`:''}</div>
-      <div class="iacts">
-        <button class="ibtn" onclick="showESI('${s.id}','${i.id}')">✏️</button>
-        <button class="ibtn" onclick="confDelSI('${s.id}','${i.id}')">🗑️</button>
+      <div class="ph-r">
+        <button class="icon-btn" style="width:34px;height:34px;border:1px solid var(--b);border-radius:8px;background:var(--s)" onclick="showSettings()">⚙️</button>
       </div>
-    </div>`).join('');
-  }
-  return h+'</div>';
+    </div>
+
+    <div class="lbl">Who Are You?</div>
+    <div class="members">
+      ${DB.members.map(m=>`<div class="mchip${APP.currentMember===m.id?' on':''}" style="${APP.currentMember===m.id?`border-color:${m.color}`:''}" onclick="setMember('${m.id}')">
+        <div class="mchip-n">${esc(m.name)}</div>
+        <div class="mchip-dot" style="background:${APP.currentMember===m.id?m.color:'var(--b2)'}"></div>
+      </div>`).join('')}
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="sn">${DB.containers.length}</div><div class="sl">Containers</div></div>
+      <div class="stat"><div class="sn">${totalItems}</div><div class="sl">Items</div></div>
+      <div class="stat"><div class="sn">${packed}</div><div class="sl">Packed</div></div>
+    </div>
+
+    <div class="lbl">Location Summary</div>
+    <div style="display:flex;gap:8px;padding:0 16px 12px">
+      <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="APP.filterLoc='studio';nav('containers')">
+        <div style="font-size:22px;margin-bottom:4px">🏠</div>
+        <div style="font-size:18px;font-weight:700;color:var(--acc)">${locCounts.studio||0}</div>
+        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">Studio</div>
+      </div>
+      <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="APP.filterLoc='gig';nav('containers')">
+        <div style="font-size:22px;margin-bottom:4px">🎤</div>
+        <div style="font-size:18px;font-weight:700;color:var(--acc)">${locCounts.gig||0}</div>
+        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">At Gig</div>
+      </div>
+      <div style="flex:1;background:var(--s);border:1px solid var(--b);border-radius:8px;padding:12px;text-align:center;cursor:pointer" onclick="APP.filterLoc='transit';nav('containers')">
+        <div style="font-size:22px;margin-bottom:4px">🚐</div>
+        <div style="font-size:18px;font-weight:700;color:var(--acc)">${locCounts.transit||0}</div>
+        <div style="font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.08em">Transit</div>
+      </div>
+    </div>
+
+    ${DB.activity.length?`<div class="lbl">Recent Activity</div>
+    ${DB.activity.slice(0,8).map(a=>{
+      const m=gmem(a.memberId);
+      return`<div class="act-row">
+        <div class="act-dot" style="background:${m?.color||'var(--mut)'}"></div>
+        <div class="act-t">${esc(a.text)}</div>
+        <div class="act-time">${timeAgo(a.time)}</div>
+      </div>`;
+    }).join('')}`:''}
+  `;
+}
+function setMember(id){
+  APP.currentMember=id;
+  localStorage.setItem('studio-member',id);
+  render();toast(`Signed in as ${gmem(id)?.name||id}`);
 }
 
-// ── Search ─────────────────────────────────────────────────
-function vSearch(){return`<div class="swrap"><div class="sinwrap"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="sin" id="si" placeholder="Search all items…" autocomplete="off" autocorrect="off" spellcheck="false"></div></div><div id="sr">${vSearchResults()}</div>`}
+// ═══════════════════════════════════════════
+// CONTAINERS VIEW
+// ═══════════════════════════════════════════
+function vContainers(){
+  let list=DB.containers;
+  if(APP.filterType!=='all')list=list.filter(c=>c.type===APP.filterType);
+  if(APP.filterLoc!=='all')list=list.filter(c=>c.location===APP.filterLoc);
+  list=[...list].sort((a,b)=>a.number-b.number);
 
+  return`
+    <div class="ph"><div class="ph-l"><div class="pt" style="margin:0">Containers</div><div class="ps">${DB.containers.length} total</div></div></div>
+    <div class="pills">
+      ${[['all','All'],['sc','Silver Cases'],['bc','Black Crates'],['cb','Clear Boxes']].map(([k,l])=>`<button class="pill${APP.filterType===k?' on':''}" onclick="APP.filterType='${k}';render()">${l}</button>`).join('')}
+    </div>
+    <div class="pills" style="padding-top:0;gap:6px">
+      ${[['all','All Locations'],['studio','🏠 Studio'],['gig','🎤 Gig'],['transit','🚐 Transit']].map(([k,l])=>`<button class="pill${APP.filterLoc===k?' on':''}" onclick="APP.filterLoc='${k}';render()" style="font-size:9px">${l}</button>`).join('')}
+    </div>
+    ${!list.length?`<div class="empty"><div class="ico">📦</div><h3>No containers</h3><p>Tap + to create your first container.</p></div>`:
+    list.map(c=>{
+      const mem=gmem(c.assignedTo);
+      const packed=c.items.filter(i=>i.packed).length;
+      const total=c.items.length;
+      const tc=CT[c.type]?.color||'var(--acc)';
+      return`<div class="card bl" style="border-left-color:${tc}" onclick="nav('container-detail','${c.id}')">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px">
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span style="font-size:15px;font-weight:700;color:${tc}">${esc(c.code)}</span>
+              ${c.name?`<span style="font-size:12px;color:var(--txt)">${esc(c.name)}</span>`:''}
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <span class="badge badge-${c.type}">${CT[c.type]?.label||c.type}</span>
+              <span class="badge badge-loc-${c.location}">${LOCS[c.location]?.icon} ${LOCS[c.location]?.label}</span>
+              <span class="badge badge-${c.packStatus}">${c.packStatus.toUpperCase()}</span>
+              ${mem?`<span class="dot" style="background:${mem.color}"></span><span style="font-size:10px;color:var(--mut)">${esc(mem.name)}</span>`:''}
+            </div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:11px;color:var(--mut)">${total} item${total!==1?'s':''}</div>
+            ${total>0?`<div style="font-size:10px;color:${packed===total?'#22c55e':'var(--mut)'}">${packed}/${total} packed</div>`:''}
+          </div>
+        </div>
+        ${total>0?`<div class="prog"><div class="pf" style="width:${Math.round(packed/total*100)}%;background:${tc}"></div></div>`:''}
+      </div>`;
+    }).join('')}`;
+}
+
+// ═══════════════════════════════════════════
+// CONTAINER DETAIL VIEW
+// ═══════════════════════════════════════════
+function vContainerDetail(){
+  const c=gbox(APP.containerId);if(!c){nav('containers');return'';}
+  const mem=gmem(c.assignedTo);
+  const packed=c.items.filter(i=>i.packed).length;
+  const total=c.items.length;
+  const pct=total?Math.round(packed/total*100):0;
+  const tc=CT[c.type]?.color||'var(--acc)';
+
+  return`
+    <div class="dh">
+      <button class="back" onclick="nav('containers')">←</button>
+      <div class="dh-b">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:18px;font-weight:700;color:${tc}">${esc(c.code)}</span>
+          ${c.name?`<span class="dh-t" style="font-size:14px">${esc(c.name)}</span>`:''}
+        </div>
+        <div class="dh-s">
+          <span class="badge badge-${c.type}">${CT[c.type]?.label}</span>
+          <span class="badge badge-${c.packStatus}">${c.packStatus.toUpperCase()}</span>
+          ${mem?`<span class="dot" style="background:${mem.color}"></span><span>${esc(mem.name)}</span>`:''}
+        </div>
+        ${total>0?`<div class="prog"><div class="pf" style="width:${pct}%;background:${tc}"></div></div>
+        <div class="pt"><span>${packed}/${total} packed</span><span>${pct}%</span></div>`:''}
+      </div>
+      <div class="dh-a">
+        <button class="icon-btn" onclick="showEditContainerModal('${c.id}')">⚙️</button>
+      </div>
+    </div>
+
+    <div style="padding:10px 16px 4px">
+      <div class="fl">Location</div>
+      <div class="loc-toggle">
+        ${Object.entries(LOCS).map(([k,v])=>`<button class="loc-btn${c.location===k?' on-'+k:''}" onclick="setLocation('${c.id}','${k}')">${v.icon} ${v.label}</button>`).join('')}
+      </div>
+    </div>
+
+    <div style="padding:8px 16px 4px">
+      <button class="btn btn-p btn-sm" style="width:100%;justify-content:center;padding:11px" onclick="enterPack('${c.id}')">▶ Enter Pack Mode</button>
+    </div>
+
+    <div class="lbl">Items (${total})</div>
+    <div style="border-top:1px solid var(--b)">
+    ${!total?`<div class="empty" style="padding:32px"><div class="ico">📋</div><h3>No items yet</h3><p>Tap + to add items from the catalog.</p></div>`:''}
+    ${c.items.map(i=>`
+      <div class="irow">
+        <div class="ick${i.packed?' on':''}" style="${i.packed?`background:${tc};border-color:${tc}`:''}" onclick="packToggleDirect('${c.id}','${i.id}')">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="ib">
+          <div class="in${i.packed?' x':''}">${esc(i.name)}</div>
+          ${i.qty>1?`<div class="iqty">QTY: ${i.qty}</div>`:''}
+          ${i.notes?`<div class="inotes">${esc(i.notes)}</div>`:''}
+        </div>
+        <div class="ia">
+          <button class="ib2" onclick="showEditItemModal('${c.id}','${i.id}')">✏️</button>
+          <button class="ib2" onclick="showCf('Delete Item','Delete "${esc(i.name)}"?',()=>{dItem('${c.id}','${i.id}');toast('Deleted');render()})">🗑️</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+function packToggleDirect(cid,iid){
+  togglePacked(cid,iid);
+  render();
+}
+
+// ═══════════════════════════════════════════
+// CATALOG VIEW
+// ═══════════════════════════════════════════
+function vCatalog(){
+  let list=DB.catalog;
+  if(APP.filterCat!=='all')list=list.filter(c=>c.cat===APP.filterCat);
+  list=[...list].sort((a,b)=>a.name.localeCompare(b.name));
+
+  function usageCount(id){return DB.containers.reduce((a,c)=>a+(c.items.some(i=>i.catalogId===id)?1:0),0)}
+
+  return`
+    <div class="ph"><div class="ph-l"><div class="pt" style="margin:0">Catalog</div><div class="ps">${DB.catalog.length} items</div></div></div>
+    <div class="pills">
+      <button class="pill${APP.filterCat==='all'?' on':''}" onclick="APP.filterCat='all';render()">All</button>
+      ${Object.entries(CATS).map(([k,v])=>`<button class="pill${APP.filterCat===k?' on':''}" onclick="APP.filterCat='${k}';render()">${v.label}</button>`).join('')}
+    </div>
+    ${!list.length?`<div class="empty"><div class="ico">📋</div><h3>No items</h3><p>Tap + to add items to the catalog.</p></div>`:''}
+    <div style="border-top:1px solid var(--b)">
+    ${list.map(c=>{
+      const n=usageCount(c.id);
+      return`<div class="irow" style="cursor:default">
+        <div class="ib">
+          <div class="in">${esc(c.name)}</div>
+          <div style="display:flex;gap:8px;margin-top:3px">
+            <span class="badge cat-${c.cat}" style="border:1px solid currentColor;opacity:.7">${CATS[c.cat]?.label||c.cat}</span>
+            ${n>0?`<span style="font-size:10px;color:var(--mut)">Used in ${n} container${n!==1?'s':''}</span>`:''}
+          </div>
+        </div>
+        <div class="ia">
+          <button class="ib2" onclick="showCf('Delete Item','Remove "${esc(c.name)}" from catalog?',()=>{dCatalogItem('${c.id}');toast('Removed');render()})">🗑️</button>
+        </div>
+      </div>`;
+    }).join('')}
+    </div>`;
+}
+
+// ═══════════════════════════════════════════
+// SEARCH VIEW
+// ═══════════════════════════════════════════
+function vSearch(){
+  return`<div class="sw"><div class="siw">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="si" id="si" placeholder="Search items across all containers…" autocomplete="off" autocorrect="off" spellcheck="false">
+  </div></div>
+  <div id="sr">${vSearchResults()}</div>`;
+}
+function wireSearch(){
+  const si=document.getElementById('si');
+  if(!si)return;
+  si.value=APP.searchQ;
+  si.addEventListener('input',e=>{APP.searchQ=e.target.value;document.getElementById('sr').innerHTML=vSearchResults()});
+  setTimeout(()=>si.focus(),80);
+}
 function vSearchResults(){
-  const q=S.q.toLowerCase().trim();
-  if(!q)return`<div class="empty"><div class="ico">🔍</div><h3>Search gear</h3><p>Type to search all items across all boxes by name or notes.</p></div>`;
+  const q=(APP.searchQ||'').toLowerCase().trim();
+  if(!q)return`<div class="empty"><div class="ico">🔍</div><h3>Search gear</h3><p>Search items across all containers by name or notes.</p></div>`;
   const res=[];
-  S.boxes.forEach(b=>b.items.forEach(i=>{if(i.name.toLowerCase().includes(q)||i.notes.toLowerCase().includes(q))res.push({b,i})}));
+  DB.containers.forEach(c=>{
+    c.items.forEach(i=>{
+      if(i.name.toLowerCase().includes(q)||(i.notes||'').toLowerCase().includes(q)){
+        res.push({c,i});
+      }
+    });
+  });
   if(!res.length)return`<div class="empty"><div class="ico">🤷</div><h3>No results</h3><p>Nothing matched "<strong>${esc(q)}</strong>".</p></div>`;
-  return res.map(({b,i})=>`<div class="card cb" style="border-left-color:${b.color}" onclick="nav('box-detail','${b.id}')">
-    <div class="ct">${esc(i.name)}</div>
-    <div class="cs"><span class="dot" style="background:${b.color}"></span><span>${esc(b.name)}</span>${b.location?`<span>· ${esc(b.location)}</span>`:''}</div>
-    ${i.notes?`<div style="font-size:11px;color:var(--muted);margin-top:4px">${esc(i.notes)}</div>`:''}
-  </div>`).join('');
+  return res.map(({c,i})=>{
+    const tc=CT[c.type]?.color||'var(--acc)';
+    return`<div class="card bl" style="border-left-color:${tc}" onclick="nav('container-detail','${c.id}')">
+      <div style="font-size:13px;font-weight:600">${esc(i.name)}</div>
+      <div style="display:flex;gap:6px;margin-top:4px;align-items:center">
+        <span style="font-size:12px;font-weight:700;color:${tc}">${esc(c.code)}</span>
+        ${c.name?`<span style="font-size:11px;color:var(--mut)">${esc(c.name)}</span>`:''}
+        <span class="badge badge-loc-${c.location}">${LOCS[c.location]?.icon} ${LOCS[c.location]?.label}</span>
+      </div>
+      ${i.notes?`<div style="font-size:11px;color:var(--mut);margin-top:4px">${esc(i.notes)}</div>`:''}
+    </div>`;
+  }).join('');
 }
 
-// ── Init ───────────────────────────────────────────────────
-load();
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+loadLocal();
 render();
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+if(APP.dbUrl)startPoll();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 </script>
 </body>
 </html>
